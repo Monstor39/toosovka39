@@ -1,0 +1,338 @@
+:root {
+  --gold: #e6c073;
+  --gold-2: #f5d998;
+  --gold-deep: #b8923f;
+  --text: #f4f1ea;
+  --muted: #cfc9bd;
+  --line: rgba(230, 192, 115, 0.22);
+  --radius: 18px;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  min-height: 100vh;
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ---------- Афиша — фон всего сайта ---------- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: url("hero.png") center center / cover no-repeat;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(6,6,10,0.45) 0%, rgba(6,6,10,0.72) 45%, rgba(6,6,10,0.92) 100%);
+}
+
+/* ---------- Основа ---------- */
+.page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------- Шапка ---------- */
+.topbar {
+  text-align: center;
+  padding: 40px 0 30px;
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+}
+.brand span { color: var(--gold); margin-left: 8px; }
+.event-meta {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.7);
+}
+
+/* ---------- Билеты ---------- */
+.tickets { padding: 10px 0 6px; }
+.tickets__title {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 6vw, 2.8rem);
+  font-weight: 700;
+  margin-bottom: 26px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+}
+.tickets__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+.ticket {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  background: rgba(12, 12, 18, 0.72);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 30px 26px;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.ticket:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+.ticket__cta {
+  margin-top: 18px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+.ticket--soldout {
+  cursor: default;
+  opacity: 0.72;
+  filter: grayscale(0.4);
+}
+.ticket--soldout:hover { transform: none; border-color: var(--line); box-shadow: none; }
+.ticket__soldout {
+  margin-top: 18px;
+  font-weight: 700;
+  color: #ff9d9d;
+}
+.tickets__loading { text-align: center; color: var(--muted); grid-column: 1 / -1; padding: 20px; }
+.ticket--vip {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), 0 16px 50px rgba(230,192,115,0.16);
+}
+.ticket__badge {
+  position: absolute;
+  top: 18px; right: 18px;
+  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  color: #17130a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 5px 12px;
+  border-radius: 100px;
+}
+.ticket__name {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+.ticket__price {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--gold-2);
+  margin: 8px 0 14px;
+}
+.ticket__desc { color: var(--muted); font-size: 0.98rem; }
+
+.tickets__note {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 24px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.7);
+}
+
+/* ---------- 3 кнопки ---------- */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  padding: 30px 0 10px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 190px;
+  padding: 16px 26px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.ico { font-size: 1.1em; }
+
+.btn--buy {
+  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  color: #17130a;
+  box-shadow: 0 10px 30px rgba(230, 192, 115, 0.32);
+}
+.btn--buy:hover { box-shadow: 0 14px 40px rgba(230, 192, 115, 0.5); }
+
+.btn--tg {
+  background: linear-gradient(135deg, #37aee2, #1e88c4);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(55, 174, 226, 0.32);
+}
+.btn--tg:hover { box-shadow: 0 14px 40px rgba(55, 174, 226, 0.5); }
+
+.btn--ig {
+  background: linear-gradient(135deg, #feda75, #d62976 45%, #962fbf 80%, #4f5bd5);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(214, 41, 118, 0.32);
+}
+.btn--ig:hover { box-shadow: 0 14px 40px rgba(214, 41, 118, 0.5); }
+
+/* ---------- Подвал ---------- */
+.footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 40px 0 10px;
+}
+.footer__logo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.footer__logo span { color: var(--gold); margin-left: 6px; }
+.footer__small { color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+
+/* ---------- Окно оформления ---------- */
+body.no-scroll { overflow: hidden; }
+.modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal[hidden] { display: none; }
+.modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); }
+.modal__panel {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #12121a;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 34px 28px 28px;
+  animation: pop 0.25s ease;
+  /* прячем полосу прокрутки — она некрасивая и не нужна */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.modal__panel::-webkit-scrollbar { width: 0; height: 0; display: none; }
+@keyframes pop { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal__close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; color: var(--muted); font-size: 1.3rem; cursor: pointer;
+}
+.modal__close:hover { color: var(--gold); }
+.modal__badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  color: #17130a; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 4px 12px; border-radius: 100px; margin-bottom: 10px;
+}
+.modal__name { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; }
+.modal__price { font-size: 1.4rem; font-weight: 700; color: var(--gold-2); margin: 3px 0 8px; }
+.modal__desc { color: var(--muted); font-size: 0.92rem; margin-bottom: 16px; }
+
+.qty { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.qty__controls { display: flex; align-items: center; gap: 16px; }
+.qty__btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--line); background: transparent; color: var(--text);
+  font-size: 1.4rem; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+}
+.qty__btn:hover { border-color: var(--gold); color: var(--gold); }
+.qty__value { min-width: 26px; text-align: center; font-size: 1.2rem; font-weight: 700; }
+
+.field { display: block; margin-bottom: 12px; }
+.field span { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+.field input {
+  width: 100%; padding: 13px 15px; border-radius: 12px;
+  border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+  color: var(--text); font-family: var(--font-body); font-size: 1rem;
+}
+.field input:focus { outline: none; border-color: var(--gold); }
+
+.modal__total { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 14px; font-size: 1.05rem; }
+.modal__total strong { font-size: 1.5rem; color: var(--gold-2); }
+.modal__error { color: #ff8f8f; font-size: 0.9rem; margin-bottom: 14px; }
+.modal__note { color: var(--muted); font-size: 0.82rem; text-align: center; margin-top: 12px; }
+
+/* ---------- Блоки «Внимание» ---------- */
+.warn-box {
+  border-radius: 12px;
+  background: rgba(231, 76, 60, 0.12);
+  border: 1px solid rgba(231, 76, 60, 0.55);
+  color: #ffd9d4;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 14px 16px;
+}
+.warn-box--sm { margin-bottom: 4px; }
+.warn-box--big {
+  text-align: center;
+  font-size: 1rem;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.warn-box__title {
+  display: block;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ff7a68;
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+.warn-box b { color: #fff; }
+
+/* ---------- Экран успеха + код ---------- */
+.success__check {
+  width: 64px; height: 64px; margin: 6px auto 16px;
+  border-radius: 50%; background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  color: #17130a; font-size: 2rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.success__title { text-align: center; font-family: var(--font-display); font-size: 2rem; font-weight: 700; }
+.success__sub { text-align: center; color: var(--muted); margin: 6px 0 22px; }
+.codes { display: grid; gap: 12px; margin-bottom: 22px; }
+.code {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--gold-2);
+  background: rgba(230, 192, 115, 0.08);
+  border: 1px dashed var(--gold);
+  border-radius: 14px;
+  padding: 18px;
+}
+.success__info { color: var(--muted); font-size: 0.92rem; text-align: center; margin-bottom: 20px; }
+.success__info b { color: var(--text); }
+
+/* ---------- Телефон ---------- */
+@media (max-width: 620px) {
+  .tickets__grid { grid-template-columns: 1fr; }
+  .btn { width: 100%; min-width: 0; }
+  .actions { padding-top: 24px; }
+  body::after {
+    background: linear-gradient(180deg, rgba(6,6,10,0.35) 0%, rgba(6,6,10,0.7) 40%, rgba(6,6,10,0.93) 100%);
+  }
+}

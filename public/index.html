@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUBAI PARTY — билеты</title>
+  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Обычный билет и VIP-столик." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">DUBAI<span>PARTY</span></div>
+      <p class="event-meta">1 августа · Правая Набережная 21 · Калининград</p>
+    </header>
+
+    <section class="tickets">
+      <h1 class="tickets__title">Выбери свой вариант</h1>
+      <div class="tickets__grid" id="tickets-grid">
+        <div class="tickets__loading">Загрузка…</div>
+      </div>
+      <p class="tickets__note">Нажми на билет, чтобы купить. По всем вопросам — пишите в Telegram.</p>
+    </section>
+
+    <section class="actions">
+      <a class="btn btn--tg" href="https://t.me/TOOSOVKA39" target="_blank" rel="noopener"><span class="ico">✈</span> Telegram</a>
+      <a class="btn btn--ig" href="https://instagram.com/imgolod" target="_blank" rel="noopener"><span class="ico">📷</span> Instagram</a>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__logo">DUBAI<span>PARTY</span></div>
+      <p class="footer__small">1 августа · Калининград · 18+</p>
+    </footer>
+  </main>
+
+  <!-- Окно оформления -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" role="dialog" aria-modal="true">
+      <button class="modal__close" data-close aria-label="Закрыть">✕</button>
+
+      <!-- Шаг 1: выбор количества и данных -->
+      <div id="step-buy">
+        <span class="modal__badge" id="m-badge" hidden></span>
+        <h3 class="modal__name" id="m-name"></h3>
+        <div class="modal__price" id="m-price"></div>
+        <p class="modal__desc" id="m-desc"></p>
+
+        <div class="qty">
+          <span>Количество</span>
+          <div class="qty__controls">
+            <button class="qty__btn" id="qty-minus" aria-label="Меньше">−</button>
+            <span class="qty__value" id="qty-value">1</span>
+            <button class="qty__btn" id="qty-plus" aria-label="Больше">+</button>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Телефон или Telegram (чтобы не потеряться)</span>
+          <input type="text" id="f-contact" placeholder="+7 900 000-00-00 или @nickname" autocomplete="off" />
+        </label>
+
+        <div class="warn-box warn-box--sm">
+          После оплаты вы получите <b>уникальный код</b> — обязательно сохраните его (скриншот). Это ваш билет для входа, его проверит охрана.
+        </div>
+
+        <div class="modal__total">
+          <span>Итого</span>
+          <strong id="m-total">0 ₽</strong>
+        </div>
+
+        <p class="modal__error" id="m-error" hidden></p>
+        <button class="btn btn--buy btn--full" id="pay-btn">Оплатить</button>
+        <p class="modal__note" id="m-note"></p>
+      </div>
+
+      <!-- Шаг 2: успех + код -->
+      <div id="step-success" hidden>
+        <div class="success__check">✓</div>
+        <h3 class="success__title">Оплата прошла!</h3>
+        <p class="success__sub" id="s-sub"></p>
+
+        <div class="warn-box warn-box--big">
+          <span class="warn-box__title">⚠️ ВНИМАНИЕ</span>
+          Обязательно сохраните код ниже — сделайте <b>СКРИНШОТ ЭКРАНА</b>.
+          Без кода на вход <b>не пустят</b>: его нужно показать охране.
+        </div>
+
+        <div class="codes" id="s-codes"></div>
+
+        <div class="success__info">
+          <p>Это ваш билет на <b>DUBAI PARTY</b>. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
+        </div>
+        <button class="btn btn--full" id="done-btn">Готово</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

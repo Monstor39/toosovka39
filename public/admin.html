@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUBAI PARTY — вход (для охраны)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #0d0d14; color: #f4f1ea; min-height: 100vh; padding: 20px; }
+    .wrap { max-width: 460px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; text-align: center; margin: 10px 0 24px; letter-spacing: 0.05em; }
+    h1 span { color: #e6c073; }
+    input, button { font-size: 1.1rem; font-family: inherit; }
+    input {
+      width: 100%; padding: 16px; border-radius: 12px; border: 1px solid #333;
+      background: #16161f; color: #fff; margin-bottom: 12px; text-align: center;
+    }
+    input#code { text-transform: uppercase; font-size: 1.8rem; letter-spacing: 0.2em; font-weight: 700; }
+    button {
+      width: 100%; padding: 16px; border-radius: 12px; border: none; cursor: pointer;
+      font-weight: 700; margin-bottom: 10px;
+    }
+    .btn-check { background: #37aee2; color: #fff; }
+    .btn-in { background: linear-gradient(135deg, #f5d998, #b8923f); color: #17130a; }
+    .result { margin: 18px 0; padding: 22px; border-radius: 14px; text-align: center; font-size: 1.1rem; display: none; }
+    .result.show { display: block; }
+    .result.ok { background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; }
+    .result.warn { background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; }
+    .result.bad { background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; }
+    .result .big { font-size: 1.5rem; font-weight: 800; display: block; margin-bottom: 6px; }
+    .result small { color: #bbb; display: block; margin-top: 8px; }
+    .link { text-align: center; margin-top: 20px; }
+    .link a { color: #e6c073; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.85rem; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid #262630; text-align: left; }
+    th { color: #e6c073; }
+    .used { color: #e74c3c; }
+    .stats { text-align: center; color: #bbb; margin: 8px 0 16px; font-size: 0.95rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>DUBAI <span>PARTY</span> · вход</h1>
+
+    <!-- Ввод пароля -->
+    <div id="auth">
+      <input type="password" id="pass" placeholder="Пароль" />
+      <button class="btn-in" onclick="savePass()">Войти</button>
+    </div>
+
+    <!-- Проверка кодов -->
+    <div id="panel" class="hidden">
+      <input type="text" id="code" placeholder="КОД" autocomplete="off" />
+      <button class="btn-check" onclick="check()">Проверить</button>
+      <button class="btn-in" onclick="checkin()">Пропустить (отметить вход)</button>
+      <div class="result" id="result"></div>
+
+      <div class="link">
+        <a href="#" onclick="toggleOrders();return false;" id="ordersLink">Показать базу заказов ▾</a>
+      </div>
+      <div id="orders" class="hidden">
+        <div class="stats" id="stats"></div>
+        <table>
+          <thead><tr><th>Код</th><th>Билет</th><th>Контакт</th><th>Вход</th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let pass = localStorage.getItem("dp_admin_pass") || "";
+    if (pass) showPanel();
+
+    function savePass() {
+      pass = document.getElementById("pass").value.trim();
+      localStorage.setItem("dp_admin_pass", pass);
+      showPanel();
+    }
+    function showPanel() {
+      document.getElementById("auth").classList.add("hidden");
+      document.getElementById("panel").classList.remove("hidden");
+      document.getElementById("code").focus();
+    }
+    function headers() {
+      return { "Content-Type": "application/json", "x-admin-password": pass };
+    }
+    function render(status, data) {
+      const r = document.getElementById("result");
+      r.className = "result show";
+      if (status === "valid") {
+        r.classList.add("ok");
+        r.innerHTML = `<span class="big">✓ ДЕЙСТВИТЕЛЕН</span>${data.ticketName}<small>${data.contact || ""}</small>`;
+      } else if (status === "checked_in") {
+        r.classList.add("ok");
+        r.innerHTML = `<span class="big">✓ ПРОПУЩЕН</span>${data.ticketName}<small>${data.contact || ""}</small>`;
+      } else if (status === "used") {
+        r.classList.add("warn");
+        r.innerHTML = `<span class="big">⚠ УЖЕ ИСПОЛЬЗОВАН</span>${data.ticketName || ""}<small>вход был: ${data.usedAt ? new Date(data.usedAt).toLocaleString("ru-RU") : ""}</small>`;
+      } else {
+        r.classList.add("bad");
+        r.innerHTML = `<span class="big">✕ КОД НЕ НАЙДЕН</span>Такого кода нет в базе`;
+      }
+    }
+    async function check() {
+      const code = document.getElementById("code").value.trim();
+      if (!code) return;
+      const res = await fetch("/api/verify", { method: "POST", headers: headers(), body: JSON.stringify({ code }) });
+      if (res.status === 401) return alert("Неверный пароль");
+      const data = await res.json();
+      render(data.status, data);
+    }
+    async function checkin() {
+      const code = document.getElementById("code").value.trim();
+      if (!code) return;
+      const res = await fetch("/api/checkin", { method: "POST", headers: headers(), body: JSON.stringify({ code }) });
+      if (res.status === 401) return alert("Неверный пароль");
+      const data = await res.json();
+      render(data.status, data);
+      document.getElementById("code").value = "";
+      document.getElementById("code").focus();
+    }
+
+    let ordersShown = false;
+    async function toggleOrders() {
+      const box = document.getElementById("orders");
+      ordersShown = !ordersShown;
+      box.classList.toggle("hidden", !ordersShown);
+      document.getElementById("ordersLink").textContent = ordersShown ? "Скрыть базу заказов ▴" : "Показать базу заказов ▾";
+      if (ordersShown) loadOrders();
+    }
+    async function loadOrders() {
+      const res = await fetch("/api/orders?pass=" + encodeURIComponent(pass));
+      if (res.status === 401) return alert("Неверный пароль");
+      const data = await res.json();
+      document.getElementById("stats").textContent =
+        Object.values(data.sold).map((s) => `${s.name}: ${s.sold}/${s.limit}`).join(" · ");
+      const rows = [];
+      data.orders.slice().reverse().forEach((o) => {
+        o.codes.forEach((c) => {
+          rows.push(`<tr><td><b>${c}</b></td><td>${o.ticketName}</td><td>${o.contact}</td><td>${"—"}</td></tr>`);
+        });
+      });
+      document.getElementById("ordersBody").innerHTML = rows.join("") || '<tr><td colspan="4">Пока нет заказов</td></tr>';
+    }
+
+    document.getElementById("code")?.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+  </script>
+</body>
+</html>
