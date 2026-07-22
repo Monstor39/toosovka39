@@ -204,6 +204,9 @@ async function processPayment(paymentId) {
 // Вебхук ЮKassa (основной путь). Уведомлению не доверяем — processPayment перепроверяет.
 app.post("/api/yookassa/webhook", async (req, res) => {
   try {
+    // Обрабатываем только события платежей (refund.* и прочие — подтверждаем и игнорируем)
+    const evt = String(req.body?.event || "");
+    if (evt && !evt.startsWith("payment.")) return res.status(200).end();
     const paymentId = req.body?.object?.id;
     if (!paymentId) return res.status(400).end();
     await processPayment(paymentId);
