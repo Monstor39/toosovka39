@@ -113,6 +113,14 @@ $("pay-btn").addEventListener("click", async () => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Не удалось оформить.");
+
+    // Боевой режим: сервер вернул ссылку на оплату ЮKassa — уходим туда.
+    // После оплаты ЮKassa вернёт на success.html, там покажем коды.
+    if (data.paymentUrl) {
+      window.location.href = data.paymentUrl;
+      return;
+    }
+
     showSuccess(data.order);
     // обновим остатки
     init();

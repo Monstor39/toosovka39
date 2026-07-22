@@ -6,6 +6,7 @@ import * as db from "./lib/db.js";
 import { makeUniqueCode } from "./lib/codes.js";
 import { notifyAdmin } from "./lib/telegram.js";
 import { startBot } from "./lib/bot.js";
+import { createPayment, getPayment } from "./lib/yookassa.js";
 
 db.load();
 
@@ -68,8 +69,9 @@ app.post("/api/checkout", async (req, res) => {
     }
 
     // Доступность (критическая секция — без await до сохранения!)
+    // pendingQty — билеты, зарезервированные под неоплаченные заказы ЮKassa
     const sold = db.soldCount(ticket.id);
-    const remaining = ticket.limit - sold;
+    const remaining = ticket.limit - sold - db.pendingQty(ticket.id);
     if (remaining <= 0)
       return res.status(409).json({ error: ticket.soldOutText || "Билеты закончились", soldOut: true });
     if (count > remaining)
@@ -122,13 +124,105 @@ app.post("/api/checkout", async (req, res) => {
       });
     }
 
-    // --- БОЕВОЙ РЕЖИМ: здесь будет создание платежа ЮKassa ---
-    // (код выдаётся после подтверждения оплаты в вебхуке)
-    return res.status(501).json({ error: "Онлайн-оплата ещё не подключена." });
+    // --- БОЕВОЙ РЕЖИМ: создаём платёж ЮKassa ---
+    // Коды выдаются ПОСЛЕ подтверждения оплаты (вебхук payment.succeeded).
+    // Сначала синхронно резервируем билеты (защита от гонки), потом идём в ЮKassa.
+    const orderId = crypto.randomUUID();
+    db.addPendingOrder({
+      id: orderId,
+      ticket: ticket.id,
+      ticketName: ticket.name,
+      qty: count,
+      unitPrice: ticket.price,
+      total,
+      contact: contactValue,
+      contactType,
+      createdAt: new Date().toISOString(),
+      paid: false,
+      status: "pending",
+      // Резерв на 20 минут — если не оплатил, билеты снова в продаже
+      expiresAt: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
+      codes: [],
+    });
+
+    let payment;
+    try {
+      const baseReturn = process.env.RETURN_URL || `http://localhost:${PORT}/success.html`;
+      payment = await createPayment({
+        amountRub: total,
+        description: `${event.title} — ${ticket.name} × ${count}`.slice(0, 128),
+        returnUrl: `${baseReturn}?order=${orderId}`,
+        metadata: { orderId },
+      });
+    } catch (err) {
+      db.markOrderCanceled(orderId); // снимаем резерв
+      console.error("Создание платежа не удалось:", err);
+      return res.status(502).json({ error: "Не удалось создать платёж. Попробуй ещё раз." });
+    }
+
+    db.setOrderPayment(orderId, payment.id);
+    return res.json({ ok: true, paymentUrl: payment.confirmation?.confirmation_url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Внутренняя ошибка сервера." });
   }
+});
+
+// ---------- Вебхук ЮKassa: подтверждение оплаты ----------
+app.post("/api/yookassa/webhook", async (req, res) => {
+  try {
+    const paymentId = req.body?.object?.id;
+    if (!paymentId) return res.status(400).end();
+
+    // Уведомлению не доверяем — перепроверяем статус прямым запросом к ЮKassa
+    const payment = await getPayment(paymentId);
+    const order = payment.metadata?.orderId ? db.findOrder(payment.metadata.orderId) : null;
+    if (!order) return res.status(200).end(); // не наш платёж — подтверждаем и игнорируем
+
+    if (payment.status === "succeeded" && !order.paid) {
+      const ticket = ticketById[order.ticket];
+      const codes = [];
+      for (let i = 0; i < order.qty; i++) {
+        codes.push(makeUniqueCode(ticket.codeFormat, db.codeExists));
+      }
+      db.markOrderPaid(order.id, codes); // синхронно
+
+      const contactLabel = order.contactType === "phone" ? "Телефон" : "Telegram";
+      notifyAdmin(
+        `🎟 <b>Новая покупка — ${event.title}</b>\n` +
+          `Билет: <b>${order.ticketName}</b> × ${order.qty}\n` +
+          `Сумма: <b>${fmtMoney(order.total)}</b>\n` +
+          `${contactLabel}: ${order.contact}\n` +
+          `Код(ы): <b>${codes.join(", ")}</b>`
+      );
+    } else if (payment.status === "canceled") {
+      db.markOrderCanceled(order.id);
+    }
+
+    res.status(200).end(); // ЮKassa ждёт 200, иначе будет слать повторно
+  } catch (err) {
+    console.error("Вебхук ЮKassa:", err);
+    res.status(500).end(); // ЮKassa повторит уведомление позже
+  }
+});
+
+// ---------- Статус заказа (страница success.html после оплаты) ----------
+app.get("/api/order-status", (req, res) => {
+  const order = db.findOrder(String(req.query.id || ""));
+  if (!order) return res.status(404).json({ status: "not_found" });
+  if (order.paid) {
+    return res.json({
+      status: "paid",
+      order: {
+        ticketName: order.ticketName,
+        qty: order.qty,
+        total: order.total,
+        totalLabel: fmtMoney(order.total),
+        codes: order.codes,
+      },
+    });
+  }
+  res.json({ status: order.status }); // pending | canceled
 });
 
 // ---------- АДМИНКА (охрана на входе + база заказов) ----------
