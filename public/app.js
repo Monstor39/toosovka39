@@ -114,6 +114,9 @@ $("pay-btn").addEventListener("click", async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Не удалось оформить.");
 
+    // Цель для Яндекс.Метрики: начал оплату (для воронки визит → оплата → покупка)
+    if (typeof ym === "function") ym(110941103, "reachGoal", "checkout");
+
     // Боевой режим: сервер вернул ссылку на оплату ЮKassa — уходим туда.
     // После оплаты ЮKassa вернёт на success.html, там покажем коды.
     if (data.paymentUrl) {
