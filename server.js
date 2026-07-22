@@ -170,45 +170,66 @@ app.post("/api/checkout", async (req, res) => {
   }
 });
 
-// ---------- Вебхук ЮKassa: подтверждение оплаты ----------
+// ---------- Подтверждение оплаты ЮKassa ----------
+// Перепроверяет статус платежа прямым запросом и выдаёт коды, если оплачен.
+// Используется и вебхуком, и фоновой проверкой зависших оплат.
+async function processPayment(paymentId) {
+  const payment = await getPayment(paymentId);
+  const order = payment.metadata?.orderId ? db.findOrder(payment.metadata.orderId) : null;
+  if (!order) return; // не наш платёж
+
+  if (payment.status === "succeeded" && !order.paid) {
+    const ticket = ticketById[order.ticket];
+    const codes = [];
+    for (let i = 0; i < order.qty; i++) {
+      codes.push(makeUniqueCode(ticket.codeFormat, db.codeExists));
+    }
+    db.markOrderPaid(order.id, codes); // синхронно
+
+    const contactLabel = order.contactType === "phone" ? "Телефон" : "Telegram";
+    const freeLeft = Math.max(0, ticket.limit - db.soldCount(ticket.id));
+    notifyAdmin(
+      `🎟 <b>Новая покупка — ${event.title}</b>\n` +
+        `Билет: <b>${order.ticketName}</b> × ${order.qty}\n` +
+        `Сумма: <b>${fmtMoney(order.total)}</b>\n` +
+        `${contactLabel}: ${order.contact}\n` +
+        `Код(ы): <b>${codes.join(", ")}</b>\n` +
+        `Свободных мест: <b>${freeLeft} из ${ticket.limit}</b>`
+    );
+  } else if (payment.status === "canceled") {
+    db.markOrderCanceled(order.id);
+  }
+}
+
+// Вебхук ЮKassa (основной путь). Уведомлению не доверяем — processPayment перепроверяет.
 app.post("/api/yookassa/webhook", async (req, res) => {
   try {
     const paymentId = req.body?.object?.id;
     if (!paymentId) return res.status(400).end();
-
-    // Уведомлению не доверяем — перепроверяем статус прямым запросом к ЮKassa
-    const payment = await getPayment(paymentId);
-    const order = payment.metadata?.orderId ? db.findOrder(payment.metadata.orderId) : null;
-    if (!order) return res.status(200).end(); // не наш платёж — подтверждаем и игнорируем
-
-    if (payment.status === "succeeded" && !order.paid) {
-      const ticket = ticketById[order.ticket];
-      const codes = [];
-      for (let i = 0; i < order.qty; i++) {
-        codes.push(makeUniqueCode(ticket.codeFormat, db.codeExists));
-      }
-      db.markOrderPaid(order.id, codes); // синхронно
-
-      const contactLabel = order.contactType === "phone" ? "Телефон" : "Telegram";
-      const freeLeft = Math.max(0, ticket.limit - db.soldCount(ticket.id));
-      notifyAdmin(
-        `🎟 <b>Новая покупка — ${event.title}</b>\n` +
-          `Билет: <b>${order.ticketName}</b> × ${order.qty}\n` +
-          `Сумма: <b>${fmtMoney(order.total)}</b>\n` +
-          `${contactLabel}: ${order.contact}\n` +
-          `Код(ы): <b>${codes.join(", ")}</b>\n` +
-          `Свободных мест: <b>${freeLeft} из ${ticket.limit}</b>`
-      );
-    } else if (payment.status === "canceled") {
-      db.markOrderCanceled(order.id);
-    }
-
+    await processPayment(paymentId);
     res.status(200).end(); // ЮKassa ждёт 200, иначе будет слать повторно
   } catch (err) {
     console.error("Вебхук ЮKassa:", err);
     res.status(500).end(); // ЮKassa повторит уведомление позже
   }
 });
+
+// Страховка: если вебхук не дошёл (не настроен/сбой сети) — сами опрашиваем
+// зависшие pending-заказы каждые 30 секунд, пока не истёк их резерв.
+if (!TEST_MODE) {
+  setInterval(async () => {
+    const pending = db
+      .getDb()
+      .orders.filter((o) => o.status === "pending" && o.paymentId);
+    for (const o of pending) {
+      try {
+        await processPayment(o.paymentId);
+      } catch (err) {
+        console.error("Фоновая проверка оплаты:", err.message);
+      }
+    }
+  }, 30 * 1000);
+}
 
 // ---------- Статус заказа (страница success.html после оплаты) ----------
 app.get("/api/order-status", (req, res) => {
