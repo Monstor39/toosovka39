@@ -102,12 +102,14 @@ app.post("/api/checkout", async (req, res) => {
 
       // Уведомление тебе в Telegram (не блокирует ответ покупателю)
       const contactLabel = contactType === "phone" ? "Телефон" : "Telegram";
+      const freeLeft = Math.max(0, ticket.limit - db.soldCount(ticket.id));
       notifyAdmin(
         `🎟 <b>Новая покупка — ${event.title}</b>\n` +
           `Билет: <b>${ticket.name}</b> × ${count}\n` +
           `Сумма: <b>${fmtMoney(total)}</b>\n` +
           `${contactLabel}: ${contactValue}\n` +
-          `Код(ы): <b>${codes.join(", ")}</b>`
+          `Код(ы): <b>${codes.join(", ")}</b>\n` +
+          `Свободных мест: <b>${freeLeft} из ${ticket.limit}</b>`
       );
 
       return res.json({
@@ -188,12 +190,14 @@ app.post("/api/yookassa/webhook", async (req, res) => {
       db.markOrderPaid(order.id, codes); // синхронно
 
       const contactLabel = order.contactType === "phone" ? "Телефон" : "Telegram";
+      const freeLeft = Math.max(0, ticket.limit - db.soldCount(ticket.id));
       notifyAdmin(
         `🎟 <b>Новая покупка — ${event.title}</b>\n` +
           `Билет: <b>${order.ticketName}</b> × ${order.qty}\n` +
           `Сумма: <b>${fmtMoney(order.total)}</b>\n` +
           `${contactLabel}: ${order.contact}\n` +
-          `Код(ы): <b>${codes.join(", ")}</b>`
+          `Код(ы): <b>${codes.join(", ")}</b>\n` +
+          `Свободных мест: <b>${freeLeft} из ${ticket.limit}</b>`
       );
     } else if (payment.status === "canceled") {
       db.markOrderCanceled(order.id);

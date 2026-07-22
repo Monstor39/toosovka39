@@ -23,7 +23,7 @@ export const tickets = [
     id: "standard",
     name: "Обычный билет",
     price: 1200,
-    limit: 320,
+    limit: 300,
     description: "Вход по билету на вечеринку DUBAI PARTY.",
     badge: null,
     codeFormat: { letters: 1, digits: 2 }, // например A42
