@@ -6,8 +6,12 @@
   <title>DUBAI PARTY — оплата</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </noscript>
 
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
@@ -71,11 +75,11 @@
         <div class="warn-box warn-box--big">
           <span class="warn-box__title">⚠️ ВНИМАНИЕ</span>
           Обязательно сохраните код ниже — сделайте <b>СКРИНШОТ ЭКРАНА</b>.
-          Без кода на вход <b>не пустят</b>: его нужно показать охране.
+          Вход <b>строго по билетам</b>: без кода на вход не пустят, его нужно показать охране.
         </div>
         <div class="codes">${order.codes.map((c) => `<div class="code">${c}</div>`).join("")}</div>
         <div class="success__info">
-          <p>Это ваш билет на <b>DUBAI PARTY</b>. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
+          <p>Это ваш билет на <b>DUBAI PARTY</b>. Оплаченная сумма — <b>ваш депозит</b>, потратите её на баре. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
         </div>
         <a class="btn btn--buy btn--full" href="/" style="text-decoration:none">На главную</a>`;
     }

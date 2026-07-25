@@ -14,6 +14,8 @@
 html { scroll-behavior: smooth; }
 body {
   min-height: 100vh;
+  /* тёмный фон сразу, пока не догрузилась афиша — без белой вспышки */
+  background: #06060a;
   color: var(--text);
   font-family: var(--font-body);
   line-height: 1.6;
@@ -27,7 +29,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background: url("hero.png") center center / cover no-repeat;
+  background: url("hero.jpg") center center / cover no-repeat;
 }
 body::after {
   content: "";
@@ -66,6 +68,37 @@ body::after {
   font-size: 0.95rem;
   letter-spacing: 0.02em;
   text-shadow: 0 1px 8px rgba(0,0,0,0.7);
+}
+
+/* ---------- Главный текст ---------- */
+.hero { text-align: center; padding: 0 0 30px; }
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5.6vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.18;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.75);
+}
+.hero__lead {
+  margin: 16px auto 0;
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.62;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.85);
+}
+.hero__lead b { color: var(--gold-2); font-weight: 700; }
+.hero__strict {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 9px 20px;
+  border-radius: 100px;
+  border: 1px solid rgba(231, 76, 60, 0.55);
+  background: rgba(231, 76, 60, 0.14);
+  color: #ffd9d4;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
 }
 
 /* ---------- Билеты ---------- */
@@ -287,6 +320,19 @@ body.no-scroll { overflow: hidden; }
   padding: 14px 16px;
 }
 .warn-box--sm { margin-bottom: 4px; }
+
+/* Плашка «это депозит» в окне покупки */
+.deposit-box {
+  border-radius: 12px;
+  background: rgba(230, 192, 115, 0.1);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 13px 16px;
+  margin-bottom: 10px;
+}
+.deposit-box b { color: var(--gold-2); }
 .warn-box--big {
   text-align: center;
   font-size: 1rem;

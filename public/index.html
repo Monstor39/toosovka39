@@ -4,11 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DUBAI PARTY — билеты</title>
-  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Обычный билет и VIP-столик." />
+  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Билет 1 200 ₽ — это депозит, всю сумму тратишь на баре: по сути вход бесплатный. Столик — депозит 10 000 ₽. Вход строго по билетам." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- афиша-фон: грузим как можно раньше, это самая тяжёлая картинка -->
+  <link rel="preload" as="image" href="hero.jpg" />
+  <!-- шрифты подключаем не блокируя показ страницы (пока грузятся — системные) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </noscript>
 
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
@@ -36,12 +43,22 @@
       <p class="event-meta">1 августа · Правая Набережная 21 · Калининград</p>
     </header>
 
+    <section class="hero">
+      <h1 class="hero__title">Калининград, мы сделали DUBAI PARTY.<br />Не хватает только тебя.</h1>
+      <p class="hero__lead">
+        Билет стоит <b>1 200 ₽</b> — и это <b>твой депозит</b>: всю сумму ты тратишь на баре.
+        По сути вход <b>бесплатный</b>, нужно просто купить себе билет с депозитом от 1 200 ₽.
+        Хочешь свой столик — <b>депозит 10 000 ₽</b>.
+      </p>
+      <p class="hero__strict">🚫 Вход строго по билетам</p>
+    </section>
+
     <section class="tickets">
-      <h1 class="tickets__title">Выбери свой вариант</h1>
+      <h2 class="tickets__title">Выбери свой вариант</h2>
       <div class="tickets__grid" id="tickets-grid">
         <div class="tickets__loading">Загрузка…</div>
       </div>
-      <p class="tickets__note">Нажми на билет, чтобы купить. По всем вопросам — пишите в Telegram.</p>
+      <p class="tickets__note">Нажми на билет, чтобы купить. Вход строго по билетам — без кода на вход не пустят. По всем вопросам пишите в Telegram.</p>
     </section>
 
     <section class="actions">
@@ -82,8 +99,12 @@
           <input type="text" id="f-contact" placeholder="+7 900 000-00-00 или @nickname" autocomplete="off" />
         </label>
 
+        <div class="deposit-box">
+          💸 Эта сумма — <b>ваш депозит</b>: вы тратите её на баре. По сути вход бесплатный.
+        </div>
+
         <div class="warn-box warn-box--sm">
-          После оплаты вы получите <b>уникальный код</b> — обязательно сохраните его (скриншот). Это ваш билет для входа, его проверит охрана.
+          <b>Вход строго по билетам.</b> После оплаты вы получите <b>уникальный код</b> — обязательно сохраните его (скриншот). Это ваш билет для входа, его проверит охрана.
         </div>
 
         <div class="modal__total">
@@ -105,13 +126,13 @@
         <div class="warn-box warn-box--big">
           <span class="warn-box__title">⚠️ ВНИМАНИЕ</span>
           Обязательно сохраните код ниже — сделайте <b>СКРИНШОТ ЭКРАНА</b>.
-          Без кода на вход <b>не пустят</b>: его нужно показать охране.
+          Вход <b>строго по билетам</b>: без кода на вход не пустят, его нужно показать охране.
         </div>
 
         <div class="codes" id="s-codes"></div>
 
         <div class="success__info">
-          <p>Это ваш билет на <b>DUBAI PARTY</b>. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
+          <p>Это ваш билет на <b>DUBAI PARTY</b>. Оплаченная сумма — <b>ваш депозит</b>, потратите её на баре. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
         </div>
         <button class="btn btn--full" id="done-btn">Готово</button>
       </div>

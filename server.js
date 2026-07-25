@@ -292,7 +292,17 @@ app.get("/api/orders", requireAdmin, (req, res) => {
   res.json({ orders: data.orders, sold });
 });
 
-app.use(express.static("public"));
+// Статика. Картинки/шрифты кэшируем в браузере надолго (афиша тяжёлая — качать
+// её при каждом заходе незачем), а html/css/js — только на 5 минут,
+// чтобы правки текста на сайте появлялись у людей быстро.
+app.use(
+  express.static("public", {
+    setHeaders(res, filePath) {
+      const long = /\.(png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath);
+      res.setHeader("Cache-Control", long ? "public, max-age=2592000" : "public, max-age=300");
+    },
+  })
+);
 
 app.listen(PORT, () => {
   console.log(`\n🎉 ${event.title} — сайт запущен: http://localhost:${PORT}`);
