@@ -101,6 +101,144 @@ body::after {
   letter-spacing: 0.02em;
 }
 
+/* ---------- Розыгрыш iPhone ---------- */
+.giveaway {
+  position: relative;
+  text-align: center;
+  margin: 6px 0 34px;
+  padding: 32px 24px 28px;
+  border-radius: 22px;
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, rgba(230,192,115,0.13) 0%, rgba(12,12,18,0.82) 60%);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 1px rgba(230,192,115,0.18), 0 18px 60px rgba(230,192,115,0.14);
+  animation: giveawayGlow 3.2s ease-in-out infinite;
+}
+@keyframes giveawayGlow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(230,192,115,0.18), 0 18px 60px rgba(230,192,115,0.12); }
+  50%      { box-shadow: 0 0 0 1px rgba(230,192,115,0.38), 0 18px 70px rgba(230,192,115,0.30); }
+}
+.giveaway__badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  color: #17130a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  padding: 6px 16px;
+  border-radius: 100px;
+  margin-bottom: 14px;
+}
+.giveaway__if {
+  color: var(--muted);
+  font-size: clamp(1rem, 3.4vw, 1.15rem);
+  letter-spacing: 0.01em;
+}
+.giveaway__prize {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 4.6vw, 1.9rem);
+  line-height: 1.1;
+  margin: 2px 0 10px;
+}
+.giveaway__prize span {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(2.1rem, 8.6vw, 3.6rem);
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 35%, var(--gold-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 6px 30px rgba(230,192,115,0.25);
+}
+.giveaway__lead {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.giveaway__progress { max-width: 420px; margin: 20px auto 4px; }
+.giveaway__bar {
+  height: 10px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.giveaway__bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-2));
+  transition: width 0.8s ease;
+}
+.giveaway__count {
+  margin-top: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--gold-2);
+  letter-spacing: 0.02em;
+}
+
+.giveaway__how {
+  margin: 24px 0 12px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+.giveaway__rules {
+  list-style: none;
+  counter-reset: g;
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: left;
+}
+.giveaway__rules li {
+  counter-increment: g;
+  position: relative;
+  padding: 12px 16px 12px 50px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,0.3);
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+.giveaway__rules li::before {
+  content: counter(g);
+  position: absolute;
+  left: 13px;
+  top: 12px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  color: #17130a;
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.giveaway__rules b { color: var(--text); }
+.giveaway__rules a { color: var(--gold-2); font-weight: 700; text-decoration: underline; }
+
+.giveaway__final {
+  margin-top: 22px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 4.4vw, 1.7rem);
+  line-height: 1.25;
+  color: var(--gold-2);
+  text-shadow: 0 2px 18px rgba(0,0,0,0.6);
+}
+
 /* ---------- Билеты ---------- */
 .tickets { padding: 10px 0 6px; }
 .tickets__title {
@@ -304,6 +442,43 @@ body.no-scroll { overflow: hidden; }
 }
 .field input:focus { outline: none; border-color: var(--gold); }
 
+/* ---------- Промокод ---------- */
+.promo { margin: 4px 0 14px; }
+.promo__label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+.promo__row { display: flex; gap: 8px; }
+.promo__row input {
+  flex: 1; min-width: 0; padding: 13px 15px; border-radius: 12px;
+  border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+  color: var(--text); font-family: var(--font-body); font-size: 1rem;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.promo__row input:focus { outline: none; border-color: var(--gold); }
+.promo__row input:read-only { color: var(--gold-2); border-color: rgba(230, 192, 115, 0.45); }
+.promo__btn {
+  flex: 0 0 auto; padding: 0 18px; border-radius: 12px;
+  border: 1px solid var(--line); background: transparent; color: var(--text);
+  font-family: var(--font-body); font-size: 0.92rem; cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.promo__btn:hover { border-color: var(--gold); color: var(--gold); }
+.promo__btn:disabled { opacity: 0.5; cursor: default; }
+.promo__msg { font-size: 0.85rem; margin-top: 8px; }
+.promo__msg--ok { color: var(--gold-2); }
+.promo__msg--err { color: #ff8f8f; }
+
+/* Старая цена зачёркнута, новая — золотом (когда применён промокод) */
+.old-price { color: var(--muted); font-weight: 400; opacity: 0.75; }
+.modal__price .old-price { font-size: 1.05rem; }
+.modal__total .old-price { font-size: 1.05rem; }
+.new-price { color: var(--gold-2); }
+
+.modal__discount {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 16px; font-size: 0.92rem; color: var(--muted);
+}
+.modal__discount strong { color: var(--gold-2); font-size: 1rem; }
+.modal__discount + .modal__total { margin-top: 6px; }
+
 .modal__total { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 14px; font-size: 1.05rem; }
 .modal__total strong { font-size: 1.5rem; color: var(--gold-2); }
 .modal__error { color: #ff8f8f; font-size: 0.9rem; margin-bottom: 14px; }
@@ -376,6 +551,9 @@ body.no-scroll { overflow: hidden; }
 /* ---------- Телефон ---------- */
 @media (max-width: 620px) {
   .tickets__grid { grid-template-columns: 1fr; }
+  .giveaway { padding: 26px 16px 24px; }
+  .giveaway__rules li { padding: 11px 13px 11px 45px; font-size: 0.92rem; }
+  .giveaway__rules li::before { left: 11px; }
   .btn { width: 100%; min-width: 0; }
   .actions { padding-top: 24px; }
   body::after {

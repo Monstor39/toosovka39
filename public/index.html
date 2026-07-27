@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DUBAI PARTY — билеты</title>
-  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Билет 1 200 ₽ — это депозит, всю сумму тратишь на баре: по сути вход бесплатный. Столик — депозит 10 000 ₽. Вход строго по билетам." />
+  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Билет 1 200 ₽ — это депозит, всю сумму тратишь на баре: по сути вход бесплатный. Продадим все 300 билетов — разыграем iPhone 17 Pro Max на вечеринке. Вход строго по билетам." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="style.css" />
@@ -53,6 +53,29 @@
       <p class="hero__strict">🚫 Вход строго по билетам</p>
     </section>
 
+    <section class="giveaway">
+      <span class="giveaway__badge">🎁 Розыгрыш 1 августа</span>
+      <p class="giveaway__if">Если разберут все 300 билетов —</p>
+      <h2 class="giveaway__prize">мы разыграем<span>iPhone 17 Pro Max</span></h2>
+      <p class="giveaway__lead">Разыграем вживую, прямо на вечеринке, среди своих.</p>
+
+      <div class="giveaway__progress" id="giveaway-progress" hidden>
+        <div class="giveaway__bar"><span id="giveaway-fill"></span></div>
+        <p class="giveaway__count" id="giveaway-count"></p>
+      </div>
+
+      <p class="giveaway__how">Чтобы участвовать, нужно:</p>
+      <ol class="giveaway__rules">
+        <li><b>Купить билет</b> — он же твой номер в розыгрыше</li>
+        <li><b>Быть подписанным</b> на наш Instagram
+          <a href="https://instagram.com/imgolod" target="_blank" rel="noopener">@imgolod</a></li>
+        <li><b>Сделать репост</b> розыгрыша к себе в Instagram</li>
+        <li><b>И главное — быть на вечеринке</b> 1 августа в момент розыгрыша. Победителя выбираем только среди тех, кто пришёл</li>
+      </ol>
+
+      <p class="giveaway__final">Твой билет — твой шанс выиграть iPhone 17 Pro Max</p>
+    </section>
+
     <section class="tickets">
       <h2 class="tickets__title">Выбери свой вариант</h2>
       <div class="tickets__grid" id="tickets-grid">
@@ -99,12 +122,27 @@
           <input type="text" id="f-contact" placeholder="+7 900 000-00-00 или @nickname" autocomplete="off" />
         </label>
 
+        <!-- Промокод: блок показываем, только если на этот билет есть действующий промокод -->
+        <div class="promo" id="promo-box" hidden>
+          <span class="promo__label">Промокод</span>
+          <div class="promo__row">
+            <input type="text" id="f-promo" placeholder="Введите промокод" autocomplete="off" autocapitalize="characters" />
+            <button type="button" class="promo__btn" id="promo-btn">Применить</button>
+          </div>
+          <p class="promo__msg" id="promo-msg" hidden></p>
+        </div>
+
         <div class="deposit-box">
           💸 Эта сумма — <b>ваш депозит</b>: вы тратите её на баре. По сути вход бесплатный.
         </div>
 
         <div class="warn-box warn-box--sm">
           <b>Вход строго по билетам.</b> После оплаты вы получите <b>уникальный код</b> — обязательно сохраните его (скриншот). Это ваш билет для входа, его проверит охрана.
+        </div>
+
+        <div class="modal__discount" id="m-discount" hidden>
+          <span>Скидка по промокоду</span>
+          <strong id="m-discount-value"></strong>
         </div>
 
         <div class="modal__total">

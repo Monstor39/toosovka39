@@ -7,6 +7,7 @@ import { makeUniqueCode } from "./lib/codes.js";
 import { notifyAdmin } from "./lib/telegram.js";
 import { startBot } from "./lib/bot.js";
 import { createPayment, getPayment } from "./lib/yookassa.js";
+import { checkPromo, hasPromoFor } from "./lib/promo.js";
 
 db.load();
 
@@ -18,10 +19,28 @@ app.use(express.json());
 
 const fmtMoney = (n) => new Intl.NumberFormat("ru-RU").format(n) + " ₽";
 
+// Строка «сколько всего куплено» для уведомления в Telegram.
+// Если у билета есть лимит — дописываем и остаток.
+function soldLine(ticket) {
+  const sold = db.soldCount(ticket.id);
+  const tail = ticket.limit
+    ? ` (свободно ${Math.max(0, ticket.limit - sold)} из ${ticket.limit})`
+    : "";
+  return `Всего куплено «${ticket.name}»: <b>${sold}</b>${tail}`;
+}
+
+// Строка про промокод для уведомления в Telegram (пусто, если промокода не было)
+function promoLine(promoCode, fullPrice, unitPrice, qty) {
+  if (!promoCode) return "";
+  const saved = (fullPrice - unitPrice) * qty;
+  return `Промокод: <b>${promoCode}</b> (скидка ${fmtMoney(saved)})\n`;
+}
+
 // ---------- Публичный статус: билеты + сколько осталось ----------
 function ticketStatus(t) {
   const sold = db.soldCount(t.id);
-  const remaining = Math.max(0, t.limit - sold);
+  // limit === null — билет без ограничения: остаток не считаем, продажи не закрываем
+  const remaining = t.limit ? Math.max(0, t.limit - sold) : null;
   return {
     id: t.id,
     name: t.name,
@@ -29,9 +48,15 @@ function ticketStatus(t) {
     priceLabel: t.priceLabel || fmtMoney(t.price),
     description: t.description,
     badge: t.badge,
+    limit: t.limit,
+    sold, // сколько уже куплено — витрине нужно для шкалы розыгрыша
+    giveawayGoal: t.giveawayGoal || null,
     remaining,
-    soldOut: remaining <= 0,
+    soldOut: remaining !== null && remaining <= 0,
     soldOutText: t.soldOutText || "Билеты закончились",
+    // есть ли живой промокод на этот билет — показывать ли поле ввода
+    // (сами промокоды наружу, разумеется, не отдаём)
+    promoEnabled: hasPromoFor(t.id),
   };
 }
 
@@ -39,10 +64,29 @@ app.get("/api/status", (req, res) => {
   res.json({ event, currency, testMode: TEST_MODE, tickets: tickets.map(ticketStatus) });
 });
 
+// ---------- Проверка промокода (до оплаты, чтобы показать новую цену) ----------
+// Итоговую цену всё равно пересчитывает /api/checkout — этот ответ только для витрины.
+app.post("/api/promo", (req, res) => {
+  const ticket = ticketById[req.body?.ticketId];
+  if (!ticket) return res.status(400).json({ error: "Такого билета нет." });
+
+  const check = checkPromo(req.body?.code, ticket);
+  if (!check.ok) return res.status(400).json({ error: check.error });
+
+  res.json({
+    ok: true,
+    code: check.code,
+    unitPrice: check.unitPrice,
+    unitPriceLabel: check.unitPrice === 0 ? "бесплатно" : fmtMoney(check.unitPrice),
+    discountPerTicket: check.discountPerTicket,
+    discountLabel: fmtMoney(check.discountPerTicket),
+  });
+});
+
 // ---------- Оформление заказа ----------
 app.post("/api/checkout", async (req, res) => {
   try {
-    const { ticketId, qty, contact } = req.body || {};
+    const { ticketId, qty, contact, promo } = req.body || {};
     const ticket = ticketById[ticketId];
     const count = Number(qty);
     const raw = String(contact || "").trim();
@@ -68,19 +112,34 @@ app.post("/api/checkout", async (req, res) => {
       contactType = "phone";
     }
 
+    // Промокод: цену со скидкой считает только сервер, из браузера приходит
+    // лишь текст промокода. Пустое поле — обычная цена.
+    let unitPrice = ticket.price;
+    let promoCode = null;
+    if (String(promo || "").trim()) {
+      const check = checkPromo(promo, ticket);
+      if (!check.ok) return res.status(400).json({ error: check.error, promoError: true });
+      unitPrice = check.unitPrice;
+      promoCode = check.code;
+    }
+
     // Доступность (критическая секция — без await до сохранения!)
-    // pendingQty — билеты, зарезервированные под неоплаченные заказы ЮKassa
-    const sold = db.soldCount(ticket.id);
-    const remaining = ticket.limit - sold - db.pendingQty(ticket.id);
-    if (remaining <= 0)
-      return res.status(409).json({ error: ticket.soldOutText || "Билеты закончились", soldOut: true });
-    if (count > remaining)
-      return res.status(409).json({ error: `Осталось только ${remaining} шт.`, remaining });
+    // pendingQty — билеты, зарезервированные под неоплаченные заказы ЮKassa.
+    // Если limit не задан — билет продаётся без ограничения, проверять нечего.
+    if (ticket.limit) {
+      const sold = db.soldCount(ticket.id);
+      const remaining = ticket.limit - sold - db.pendingQty(ticket.id);
+      if (remaining <= 0)
+        return res.status(409).json({ error: ticket.soldOutText || "Билеты закончились", soldOut: true });
+      if (count > remaining)
+        return res.status(409).json({ error: `Осталось только ${remaining} шт.`, remaining });
+    }
 
-    const total = ticket.price * count;
+    const total = unitPrice * count;
 
-    // --- ТЕСТ-РЕЖИМ: оплата имитируется, код выдаём сразу ---
-    if (TEST_MODE) {
+    // --- Оплата не нужна: тест-режим либо билет бесплатный по промокоду ---
+    // (ЮKassa не примет платёж на 0 ₽, поэтому код выдаём сразу.)
+    if (TEST_MODE || total === 0) {
       const codes = [];
       for (let i = 0; i < count; i++) {
         codes.push(makeUniqueCode(ticket.codeFormat, db.codeExists));
@@ -90,36 +149,39 @@ app.post("/api/checkout", async (req, res) => {
         ticket: ticket.id,
         ticketName: ticket.name,
         qty: count,
-        unitPrice: ticket.price,
+        unitPrice,
         total,
+        promo: promoCode,
         contact: contactValue,
         contactType,
         createdAt: new Date().toISOString(),
         paid: true,
+        status: "paid",
         codes,
       };
       db.addOrder(order); // сохраняем синхронно
 
       // Уведомление тебе в Telegram (не блокирует ответ покупателю)
       const contactLabel = contactType === "phone" ? "Телефон" : "Telegram";
-      const freeLeft = Math.max(0, ticket.limit - db.soldCount(ticket.id));
       notifyAdmin(
         `🎟 <b>Новая покупка — ${event.title}</b>\n` +
           `Билет: <b>${ticket.name}</b> × ${count}\n` +
-          `Сумма: <b>${fmtMoney(total)}</b>\n` +
+          `Сумма: <b>${total === 0 ? "бесплатно (промокод)" : fmtMoney(total)}</b>\n` +
+          promoLine(promoCode, ticket.price, unitPrice, count) +
+          `Депозит на баре: <b>${unitPrice === 0 ? "нет" : fmtMoney(unitPrice)}</b> у каждого\n` +
           `${contactLabel}: ${contactValue}\n` +
           `Код(ы): <b>${codes.join(", ")}</b>\n` +
-          `Свободных мест: <b>${freeLeft} из ${ticket.limit}</b>`
+          soldLine(ticket)
       );
 
       return res.json({
         ok: true,
-        testMode: true,
+        testMode: TEST_MODE,
         order: {
           ticketName: ticket.name,
           qty: count,
           total,
-          totalLabel: fmtMoney(total),
+          totalLabel: total === 0 ? "бесплатно по промокоду" : fmtMoney(total),
           contact: contactValue,
           codes,
         },
@@ -135,8 +197,10 @@ app.post("/api/checkout", async (req, res) => {
       ticket: ticket.id,
       ticketName: ticket.name,
       qty: count,
-      unitPrice: ticket.price,
+      unitPrice,
       total,
+      promo: promoCode,
+      fullPrice: ticket.price, // цена без скидки — для уведомления после оплаты
       contact: contactValue,
       contactType,
       createdAt: new Date().toISOString(),
@@ -152,7 +216,7 @@ app.post("/api/checkout", async (req, res) => {
       const baseReturn = process.env.RETURN_URL || `http://localhost:${PORT}/success.html`;
       payment = await createPayment({
         amountRub: total,
-        description: `${event.title} — ${ticket.name} × ${count}`.slice(0, 128),
+        description: `${event.title} — ${ticket.name} × ${count}${promoCode ? ` (промокод ${promoCode})` : ""}`.slice(0, 128),
         returnUrl: `${baseReturn}?order=${orderId}`,
         metadata: { orderId },
       });
@@ -187,14 +251,15 @@ async function processPayment(paymentId) {
     db.markOrderPaid(order.id, codes); // синхронно
 
     const contactLabel = order.contactType === "phone" ? "Телефон" : "Telegram";
-    const freeLeft = Math.max(0, ticket.limit - db.soldCount(ticket.id));
     notifyAdmin(
       `🎟 <b>Новая покупка — ${event.title}</b>\n` +
         `Билет: <b>${order.ticketName}</b> × ${order.qty}\n` +
         `Сумма: <b>${fmtMoney(order.total)}</b>\n` +
+        promoLine(order.promo, order.fullPrice ?? ticket.price, order.unitPrice, order.qty) +
+        `Депозит на баре: <b>${fmtMoney(order.unitPrice)}</b> у каждого\n` +
         `${contactLabel}: ${order.contact}\n` +
         `Код(ы): <b>${codes.join(", ")}</b>\n` +
-        `Свободных мест: <b>${freeLeft} из ${ticket.limit}</b>`
+        soldLine(ticket)
     );
   } else if (payment.status === "canceled") {
     db.markOrderCanceled(order.id);
@@ -260,6 +325,16 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// Депозит по коду для охраны: сколько человек заплатил (по промокоду — меньше)
+function depositInfo(info) {
+  const deposit = info.deposit ?? ticketById[info.ticket]?.price ?? null;
+  return {
+    deposit,
+    depositLabel: deposit === null ? "—" : deposit === 0 ? "бесплатно" : fmtMoney(deposit),
+    promo: info.promo || null,
+  };
+}
+
 // Проверить код (без отметки)
 app.post("/api/verify", requireAdmin, (req, res) => {
   const code = String(req.body?.code || "").trim().toUpperCase();
@@ -270,6 +345,7 @@ app.post("/api/verify", requireAdmin, (req, res) => {
     ticketName: info.ticketName,
     contact: info.contact,
     usedAt: info.usedAt,
+    ...depositInfo(info),
   });
 });
 
@@ -279,9 +355,14 @@ app.post("/api/checkin", requireAdmin, (req, res) => {
   const result = db.markUsed(code);
   if (!result.ok && result.reason === "not_found") return res.json({ status: "not_found" });
   if (!result.ok && result.reason === "already_used")
-    return res.json({ status: "used", ticketName: result.code.ticketName, usedAt: result.code.usedAt });
+    return res.json({
+      status: "used",
+      ticketName: result.code.ticketName,
+      usedAt: result.code.usedAt,
+      ...depositInfo(result.code),
+    });
   const info = db.getCode(code);
-  res.json({ status: "checked_in", ticketName: info.ticketName, contact: info.contact });
+  res.json({ status: "checked_in", ticketName: info.ticketName, contact: info.contact, ...depositInfo(info) });
 });
 
 // Список заказов (база: какой код кому выдан)

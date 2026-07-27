@@ -1,6 +1,7 @@
 const fmt = (n) => new Intl.NumberFormat("ru-RU").format(n) + " ₽";
 
-const state = { tickets: [], current: null, qty: 1 };
+// promo — применённый промокод: { code, unitPrice, discountPerTicket, ... } с сервера
+const state = { tickets: [], current: null, qty: 1, promo: null };
 
 const $ = (id) => document.getElementById(id);
 
@@ -10,6 +11,7 @@ async function init() {
     const data = await res.json();
     state.tickets = data.tickets;
     renderTickets();
+    renderGiveaway();
   } catch (e) {
     $("tickets-grid").innerHTML =
       '<p class="tickets__loading">Не удалось загрузить билеты. Запусти сервер (Запустить сайт.bat).</p>';
@@ -37,13 +39,34 @@ function renderTickets() {
   });
 }
 
+/* ---------- Розыгрыш: сколько билетов уже продано ----------
+   Цель розыгрыша (300) — это только шкала: продажи после неё не закрываются. */
+function renderGiveaway() {
+  const t = state.tickets.find((x) => x.id === "standard");
+  const goal = t && (t.giveawayGoal || t.limit);
+  if (!goal) return;
+
+  const sold = t.sold || 0;
+  const left = Math.max(0, goal - sold);
+  const percent = Math.min(100, Math.round((sold / goal) * 100));
+
+  $("giveaway-fill").style.width = percent + "%";
+  $("giveaway-count").textContent =
+    left > 0
+      ? `Продано ${sold} из ${goal} билетов · до розыгрыша осталось ${left}`
+      : `Все ${goal} билетов проданы — розыгрыш состоится! 🎉`;
+  $("giveaway-progress").hidden = false;
+}
+
 /* ---------- Модалка ---------- */
 const modal = $("modal");
 
 function openModal(ticket) {
   state.current = ticket;
   state.qty = 1;
+  resetPromo(); // при открытии окна промокод всегда чистый
 
+  $("promo-box").hidden = !ticket.promoEnabled;
   $("step-buy").hidden = false;
   $("step-success").hidden = true;
   $("m-error").hidden = true;
@@ -53,11 +76,11 @@ function openModal(ticket) {
   else badge.hidden = true;
 
   $("m-name").textContent = ticket.name;
-  $("m-price").textContent = ticket.priceLabel;
   $("m-desc").textContent = ticket.description;
   $("f-contact").value = "";
+  // remaining === null — билет без ограничения по количеству
   $("m-note").textContent =
-    ticket.remaining <= 10 ? `Осталось ${ticket.remaining} шт.` : "";
+    ticket.remaining !== null && ticket.remaining <= 10 ? `Осталось ${ticket.remaining} шт.` : "";
   updateQty();
   modal.hidden = false;
   document.body.classList.add("no-scroll");
@@ -70,14 +93,109 @@ function closeModal() {
 
 function updateQty() {
   const t = state.current;
-  const max = Math.min(20, t.remaining);
+  const max = t.remaining === null ? 20 : Math.min(20, t.remaining);
   state.qty = Math.max(1, Math.min(max, state.qty));
   $("qty-value").textContent = state.qty;
-  $("m-total").textContent = fmt(t.price * state.qty);
+  updateTotal();
+}
+
+// Цена за один билет: со скидкой, если применён промокод
+function unitPrice() {
+  return state.promo ? state.promo.unitPrice : state.current.price;
+}
+
+// Надпись на кнопке: бесплатный билет по промокоду оплачивать нечем
+function payLabel() {
+  return unitPrice() * state.qty === 0 ? "Получить билет" : "Оплатить";
+}
+
+function updateTotal() {
+  const t = state.current;
+  const total = unitPrice() * state.qty;
+  const totalText = total === 0 ? "бесплатно" : fmt(total);
+
+  // С промокодом старую цену зачёркиваем и рядом показываем новую
+  if (state.promo) {
+    $("m-price").innerHTML =
+      `<s class="old-price">${t.priceLabel}</s> <span class="new-price">${fmt(state.promo.unitPrice)}</span>`;
+    $("m-total").innerHTML =
+      `<s class="old-price">${fmt(t.price * state.qty)}</s> <span class="new-price">${totalText}</span>`;
+  } else {
+    $("m-price").textContent = t.priceLabel;
+    $("m-total").textContent = totalText;
+  }
+
+  const disc = $("m-discount");
+  if (state.promo) {
+    $("m-discount-value").textContent = "−" + fmt(state.promo.discountPerTicket * state.qty);
+    disc.hidden = false;
+  } else {
+    disc.hidden = true;
+  }
+  $("pay-btn").textContent = payLabel();
 }
 
 $("qty-minus").addEventListener("click", () => { state.qty--; updateQty(); });
 $("qty-plus").addEventListener("click", () => { state.qty++; updateQty(); });
+
+/* ---------- Промокод ---------- */
+function promoMsg(text, ok) {
+  const el = $("promo-msg");
+  el.textContent = text;
+  el.className = "promo__msg" + (ok ? " promo__msg--ok" : " promo__msg--err");
+  el.hidden = false;
+}
+
+// Снять промокод и вернуть поле в исходное состояние
+function resetPromo() {
+  state.promo = null;
+  $("f-promo").value = "";
+  $("f-promo").readOnly = false;
+  $("promo-btn").textContent = "Применить";
+  $("promo-msg").hidden = true;
+  if (state.current) updateTotal();
+}
+
+async function applyPromo() {
+  const code = $("f-promo").value.trim();
+  if (!code) return promoMsg("Введи промокод.", false);
+
+  const btn = $("promo-btn");
+  btn.disabled = true;
+  try {
+    const res = await fetch("/api/promo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticketId: state.current.id, code }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      state.promo = null;
+      promoMsg(data.error || "Промокод не подошёл.", false);
+    } else {
+      state.promo = data;
+      $("f-promo").value = data.code;
+      $("f-promo").readOnly = true;
+      btn.textContent = "Убрать";
+      promoMsg(`Промокод применён — билет за ${data.unitPriceLabel}`, true);
+    }
+  } catch (e) {
+    state.promo = null;
+    promoMsg("Не получилось проверить промокод. Попробуй ещё раз.", false);
+  } finally {
+    btn.disabled = false;
+    updateTotal();
+  }
+}
+
+$("promo-btn").addEventListener("click", () => {
+  if (state.promo) resetPromo(); // кнопка работает как «Убрать»
+  else applyPromo();
+});
+
+$("f-promo").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); if (!state.promo) applyPromo(); }
+});
 
 modal.addEventListener("click", (e) => {
   if (e.target.dataset.close !== undefined) closeModal();
@@ -109,10 +227,20 @@ $("pay-btn").addEventListener("click", async () => {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ticketId: state.current.id, qty: state.qty, contact }),
+      body: JSON.stringify({
+        ticketId: state.current.id,
+        qty: state.qty,
+        contact,
+        promo: state.promo ? state.promo.code : null,
+      }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Не удалось оформить.");
+    if (!res.ok) {
+      // Промокод протух между «Применить» и оплатой (закончился, выключили) —
+      // снимаем его, чтобы человек мог оплатить по обычной цене.
+      if (data.promoError) { resetPromo(); promoMsg(data.error, false); }
+      throw new Error(data.error || "Не удалось оформить.");
+    }
 
     // Цель для Яндекс.Метрики: начал оплату (для воронки визит → оплата → покупка)
     if (typeof ym === "function") ym(110941103, "reachGoal", "checkout");
@@ -131,11 +259,15 @@ $("pay-btn").addEventListener("click", async () => {
     showErr(e.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = "Оплатить";
+    btn.textContent = payLabel();
   }
 });
 
 function showSuccess(order) {
+  // Билет по промокоду может быть бесплатным — тогда оплаты нет и на success.html
+  // человек не попадает, поэтому цель «покупка» отмечаем здесь.
+  if (typeof ym === "function") ym(110941103, "reachGoal", "purchase");
+
   $("step-buy").hidden = true;
   $("step-success").hidden = false;
   $("s-sub").textContent = `${order.ticketName} × ${order.qty} · ${order.totalLabel}`;
