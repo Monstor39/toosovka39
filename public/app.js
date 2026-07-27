@@ -11,7 +11,6 @@ async function init() {
     const data = await res.json();
     state.tickets = data.tickets;
     renderTickets();
-    renderGiveaway();
   } catch (e) {
     $("tickets-grid").innerHTML =
       '<p class="tickets__loading">Не удалось загрузить билеты. Запусти сервер (Запустить сайт.bat).</p>';
@@ -37,25 +36,6 @@ function renderTickets() {
     if (!t.soldOut) card.addEventListener("click", () => openModal(t));
     grid.appendChild(card);
   });
-}
-
-/* ---------- Розыгрыш: сколько билетов уже продано ----------
-   Цель розыгрыша (300) — это только шкала: продажи после неё не закрываются. */
-function renderGiveaway() {
-  const t = state.tickets.find((x) => x.id === "standard");
-  const goal = t && (t.giveawayGoal || t.limit);
-  if (!goal) return;
-
-  const sold = t.sold || 0;
-  const left = Math.max(0, goal - sold);
-  const percent = Math.min(100, Math.round((sold / goal) * 100));
-
-  $("giveaway-fill").style.width = percent + "%";
-  $("giveaway-count").textContent =
-    left > 0
-      ? `Продано ${sold} из ${goal} билетов · до розыгрыша осталось ${left}`
-      : `Все ${goal} билетов проданы — розыгрыш состоится! 🎉`;
-  $("giveaway-progress").hidden = false;
 }
 
 /* ---------- Модалка ---------- */

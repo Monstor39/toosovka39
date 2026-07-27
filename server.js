@@ -49,8 +49,7 @@ function ticketStatus(t) {
     description: t.description,
     badge: t.badge,
     limit: t.limit,
-    sold, // сколько уже куплено — витрине нужно для шкалы розыгрыша
-    giveawayGoal: t.giveawayGoal || null,
+    // сколько уже продано, наружу не отдаём — это видно только в боте и админке
     remaining,
     soldOut: remaining !== null && remaining <= 0,
     soldOutText: t.soldOutText || "Билеты закончились",
