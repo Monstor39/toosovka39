@@ -229,6 +229,27 @@ body::after {
 .giveaway__rules b { color: var(--text); }
 .giveaway__rules a { color: var(--gold-2); font-weight: 700; text-decoration: underline; }
 
+.giveaway__reel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 16px auto 0;
+  padding: 14px 24px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, #feda75, #d62976 45%, #962fbf 80%, #4f5bd5);
+  box-shadow: 0 10px 30px rgba(214, 41, 118, 0.32);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.giveaway__reel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(214, 41, 118, 0.5);
+}
+
 .giveaway__final {
   margin-top: 18px;
   font-family: var(--font-display);
