@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DUBAI PARTY — билеты</title>
-  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Билет 1 200 ₽ — это депозит, всю сумму тратишь на баре: по сути вход бесплатный. Продадим все 300 билетов — разыграем iPhone 17 Pro Max на вечеринке. Вход строго по билетам." />
+  <title>DUBAI PARTY — билеты, 1 августа, Калининград</title>
+  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Вход от 200 ₽. Билет за 1 200 ₽ — это депозит: всю сумму тратишь на баре, по сути вход бесплатный. Колесо «Крейзи Дубай» — скидка до 60%. Разыграем iPhone 17 Pro Max. Вход строго по билетам." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="style.css" />
   <!-- афиша-фон: грузим как можно раньше, это самая тяжёлая картинка -->
   <link rel="preload" as="image" href="hero.jpg" />
   <!-- шрифты подключаем не блокируя показ страницы (пока грузятся — системные) -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   </noscript>
 
   <!-- Yandex.Metrika counter -->
@@ -45,19 +45,88 @@
 
     <section class="hero">
       <h1 class="hero__title">Калининград, мы сделали DUBAI PARTY.<br />Не хватает только тебя.</h1>
+
+      <p class="hero__offer">Вход от <b>200 ₽</b></p>
+
       <p class="hero__lead">
-        Билет стоит <b>1 200 ₽</b> — и это <b>твой депозит</b>: всю сумму ты тратишь на баре.
-        По сути вход <b>бесплатный</b>, нужно просто купить себе билет с депозитом от 1 200 ₽.
-        Хочешь свой столик — <b>депозит 10 000 ₽</b>.
+        Берёшь билет за <b>1 200 ₽</b> — и это <b>твой депозит</b>: всю сумму ты тратишь на баре.
+        Деньги не уходят никуда, они возвращаются к тебе коктейлями — по сути вход <b>бесплатный</b>.
+        Не хочешь депозит — есть <b>просто вход за 200 ₽</b>.
       </p>
-      <p class="hero__strict">🚫 Вход строго по билетам</p>
+
+      <button class="btn btn--buy btn--hero" data-scroll="tickets">Взять билет →</button>
+      <p class="hero__under">Займёт 30 секунд · код приходит сразу после оплаты</p>
+
+      <div class="trust">
+        <span>🔒 Оплата через ЮKassa</span>
+        <span>⚡ Код сразу на экране</span>
+        <span>🚫 Вход строго по билетам</span>
+        <span>18+</span>
+      </div>
     </section>
 
+    <!-- ---------- Колесо «Крейзи Дубай» ---------- -->
+    <section class="wheelsec" id="wheelsec" hidden>
+      <span class="wheelsec__badge">🎡 Скидка на билет</span>
+      <h2 class="wheelsec__title">КРЕЙЗИ ДУБАЙ</h2>
+      <p class="wheelsec__lead">
+        Один прокрут — одна скидка на билет <b>с депозитом</b>. Может выпасть и <b>−60%</b>.
+        Крутить можно <b>только один раз</b>, второй попытки не будет.
+      </p>
+
+      <div class="wheel">
+        <div class="wheel__pin"></div>
+        <div class="wheel__disc" id="wheel-disc"></div>
+        <button class="wheel__go" id="wheel-go">КРУ<br />ТИТЬ</button>
+      </div>
+
+      <!-- Выигрыш -->
+      <div class="wres" id="wheel-result" hidden>
+        <p class="wres__label">Твоя скидка на билет с депозитом</p>
+        <p class="wres__percent" id="wheel-percent">−25%</p>
+        <p class="wres__timer">Сгорит через <b id="wheel-timer">15:00</b></p>
+        <button class="btn btn--buy btn--full" id="wheel-take">Забрать скидку →</button>
+        <p class="wres__note">Скидка режет и цену, и депозит: платишь меньше — и на баре у тебя эта же сумма.</p>
+      </div>
+
+      <!-- Скидка сгорела / уже использована -->
+      <div class="wres wres--dead" id="wheel-dead" hidden>
+        <p class="wres__label" id="wheel-dead-title">Скидка сгорела</p>
+        <p class="wres__note" id="wheel-dead-text">Колесо крутится один раз с устройства. Но билеты на месте — забирай без скидки, депозит всё равно возвращается баром.</p>
+        <button class="btn btn--buy btn--full" data-scroll="tickets">К билетам →</button>
+      </div>
+
+      <p class="wheelsec__small">
+        Скидка живёт 15 минут после прокрута — не успел купить, сгорает навсегда.
+        На входной билет за 200 ₽ скидка не действует.
+      </p>
+    </section>
+
+    <!-- ---------- Билеты ---------- -->
+    <section class="tickets" id="tickets">
+      <h2 class="tickets__title">Выбери свой вариант</h2>
+      <div class="tickets__grid" id="tickets-grid">
+        <div class="tickets__loading">Загрузка…</div>
+      </div>
+      <p class="tickets__note">Нажми на билет, чтобы купить. Вход строго по билетам — без кода на вход не пустят.</p>
+    </section>
+
+    <!-- ---------- Розыгрыш ---------- -->
     <section class="giveaway">
       <span class="giveaway__badge">🎁 Розыгрыш 1 августа</span>
       <p class="giveaway__if">Если разберут все 300 билетов —</p>
       <h2 class="giveaway__prize">мы разыграем<span>iPhone 17 Pro Max</span></h2>
       <p class="giveaway__lead">Разыграем вживую, прямо на вечеринке, среди своих.</p>
+
+      <div class="prizes">
+        <p class="prizes__title">И это не всё — призы от партнёров:</p>
+        <ul class="prizes__list">
+          <li><span>💡</span> Детейлинг — <b>полировка фар</b></li>
+          <li><span>💅</span> <b>Маникюр</b></li>
+          <li><span>🏋️</span> <b>Абонемент в КЗ</b> на посещения</li>
+        </ul>
+        <p class="prizes__more">Все подробности — в Instagram <a href="https://instagram.com/imgolod" target="_blank" rel="noopener">@imgolod</a></p>
+      </div>
 
       <p class="giveaway__how">Что нужно сделать, чтобы участвовать:</p>
       <ol class="giveaway__rules">
@@ -77,12 +146,54 @@
       <p class="giveaway__final">Твой билет — твой шанс выиграть iPhone 17 Pro Max</p>
     </section>
 
-    <section class="tickets">
-      <h2 class="tickets__title">Выбери свой вариант</h2>
-      <div class="tickets__grid" id="tickets-grid">
-        <div class="tickets__loading">Загрузка…</div>
-      </div>
-      <p class="tickets__note">Нажми на билет, чтобы купить. Вход строго по билетам — без кода на вход не пустят. По всем вопросам пишите в Telegram.</p>
+    <!-- ---------- Частые вопросы ---------- -->
+    <section class="faq">
+      <h2 class="faq__title">Частые вопросы</h2>
+
+      <details class="faq__item">
+        <summary>1 200 ₽ — это правда депозит?</summary>
+        <p>Да. Приходишь, показываешь код на входе — и всю сумму тратишь на баре: коктейли, шоты, что захочешь. Деньги остаются у тебя, просто в стакане. Поэтому вход и получается бесплатным.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>А если я не хочу депозит?</summary>
+        <p>Бери входной билет за 200 ₽. Это просто вход на вечеринку, бар оплачиваешь отдельно — как в любом заведении.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Зачем тогда платить 200 ₽ за вход?</summary>
+        <p>Чтобы билеты не разбирали боты и случайные люди. 200 ₽ — это формальность и пропуск, а не депозит: на баре они не тратятся.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Как работает колесо «Крейзи Дубай»?</summary>
+        <p>Крутишь один раз — выпадает скидка от 5% до 60% на билет с депозитом. Скидка живёт 15 минут: успел купить — твоя, не успел — сгорела навсегда, второй раз крутить нельзя. Скидка режет и цену, и депозит: выпало −50% — платишь 600 ₽ и на баре у тебя тоже 600 ₽.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Что делать с кодом после оплаты?</summary>
+        <p>Сохрани его — сделай скриншот. На входе показываешь код охране, она гасит его в системе. Код работает один раз, так что не выкладывай его в общий чат.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Можно взять несколько билетов сразу?</summary>
+        <p>Да, до 20 штук за раз. На каждый билет придёт свой отдельный код — раздашь друзьям.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Оплата безопасная?</summary>
+        <p>Оплата идёт через ЮKassa (Сбер, карты любых банков). Мы не видим и не храним данные карты, а код появляется на экране сразу после успешной оплаты.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Потерял код — что делать?</summary>
+        <p>Напиши нам в Telegram <a href="https://t.me/TOOSOVKA39" target="_blank" rel="noopener">@TOOSOVKA39</a>. Найдём тебя по номеру или нику, который ты указал при покупке, и пришлём код заново.</p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Со скольки лет?</summary>
+        <p>18+. На входе могут попросить документ.</p>
+      </details>
     </section>
 
     <section class="actions">
@@ -96,6 +207,15 @@
     </footer>
   </main>
 
+  <!-- Липкая кнопка внизу экрана -->
+  <div class="sticky" id="sticky" hidden>
+    <div class="sticky__text">
+      <b id="sticky-price">Вход от 200 ₽</b>
+      <span>Вход строго по билетам</span>
+    </div>
+    <button class="btn btn--buy" data-scroll="tickets">Взять билет</button>
+  </div>
+
   <!-- Окно оформления -->
   <div class="modal" id="modal" hidden>
     <div class="modal__backdrop" data-close></div>
@@ -108,6 +228,11 @@
         <h3 class="modal__name" id="m-name"></h3>
         <div class="modal__price" id="m-price"></div>
         <p class="modal__desc" id="m-desc"></p>
+
+        <!-- Скидка с колеса «Крейзи Дубай» -->
+        <div class="mwheel" id="m-wheel" hidden>
+          🎡 Скидка колеса <b id="m-wheel-pct">−25%</b> уже применена · сгорит через <b id="m-wheel-timer">15:00</b>
+        </div>
 
         <div class="qty">
           <span>Количество</span>
@@ -133,7 +258,7 @@
           <p class="promo__msg" id="promo-msg" hidden></p>
         </div>
 
-        <div class="deposit-box">
+        <div class="deposit-box" id="m-deposit-box">
           💸 Эта сумма — <b>ваш депозит</b>: вы тратите её на баре. По сути вход бесплатный.
         </div>
 
@@ -142,7 +267,7 @@
         </div>
 
         <div class="modal__discount" id="m-discount" hidden>
-          <span>Скидка по промокоду</span>
+          <span id="m-discount-label">Скидка по промокоду</span>
           <strong id="m-discount-value"></strong>
         </div>
 
@@ -171,7 +296,7 @@
         <div class="codes" id="s-codes"></div>
 
         <div class="success__info">
-          <p>Это ваш билет на <b>DUBAI PARTY</b>. Оплаченная сумма — <b>ваш депозит</b>, потратите её на баре. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
+          <p id="s-info">Это ваш билет на <b>DUBAI PARTY</b>. Оплаченная сумма — <b>ваш депозит</b>, потратите её на баре. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
         </div>
         <button class="btn btn--full" id="done-btn">Готово</button>
       </div>

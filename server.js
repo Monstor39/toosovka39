@@ -1,19 +1,24 @@
 import "dotenv/config"; // ВАЖНО: грузим .env ДО остальных импортов, иначе бот не увидит токен
 import express from "express";
 import crypto from "crypto";
-import { event, currency, tickets, ticketById, TEST_MODE } from "./config.js";
+import { event, currency, tickets, ticketById, wheel as wheelConfig, TEST_MODE } from "./config.js";
 import * as db from "./lib/db.js";
 import { makeUniqueCode } from "./lib/codes.js";
 import { notifyAdmin } from "./lib/telegram.js";
 import { startBot } from "./lib/bot.js";
 import { createPayment, getPayment } from "./lib/yookassa.js";
 import { checkPromo, hasPromoFor } from "./lib/promo.js";
+import * as wheel from "./lib/wheel.js";
 
 db.load();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "dubai2026";
+
+// За nginx: берём настоящий IP посетителя из X-Forwarded-For —
+// на нём держится правило колеса «один прокрут с одного IP».
+app.set("trust proxy", true);
 
 app.use(express.json());
 
@@ -29,11 +34,19 @@ function soldLine(ticket) {
   return `Всего куплено «${ticket.name}»: <b>${sold}</b>${tail}`;
 }
 
-// Строка про промокод для уведомления в Telegram (пусто, если промокода не было)
-function promoLine(promoCode, fullPrice, unitPrice, qty) {
-  if (!promoCode) return "";
-  const saved = (fullPrice - unitPrice) * qty;
-  return `Промокод: <b>${promoCode}</b> (скидка ${fmtMoney(saved)})\n`;
+// Строка про скидку для уведомления в Telegram (пусто, если скидки не было).
+// Скидка могла прийти из промокода или с колеса «Крейзи Дубай».
+function discountLine(order, fullPrice) {
+  const saved = (fullPrice - order.unitPrice) * order.qty;
+  if (order.promo) return `Промокод: <b>${order.promo}</b> (скидка ${fmtMoney(saved)})\n`;
+  if (order.wheel) return `🎡 Колесо: <b>−${order.wheel}%</b> (скидка ${fmtMoney(saved)})\n`;
+  return "";
+}
+
+// Что писать про депозит: у входного билета его нет
+function depositNote(ticket, unitPrice) {
+  if (ticket.deposit === false) return `Депозит на баре: <b>нет</b> (входной билет)\n`;
+  return `Депозит на баре: <b>${unitPrice === 0 ? "нет" : fmtMoney(unitPrice)}</b> у каждого\n`;
 }
 
 // ---------- Публичный статус: билеты + сколько осталось ----------
@@ -56,11 +69,28 @@ function ticketStatus(t) {
     // есть ли живой промокод на этот билет — показывать ли поле ввода
     // (сами промокоды наружу, разумеется, не отдаём)
     promoEnabled: hasPromoFor(t.id),
+    hasDeposit: t.deposit !== false, // цена = депозит на баре?
+    wheelEligible: wheel.appliesTo(t), // действует ли на него скидка колеса
   };
 }
 
 app.get("/api/status", (req, res) => {
-  res.json({ event, currency, testMode: TEST_MODE, tickets: tickets.map(ticketStatus) });
+  res.json({
+    event,
+    currency,
+    testMode: TEST_MODE,
+    tickets: tickets.map(ticketStatus),
+    wheel: wheel.state(wheel.clientKey(req)),
+  });
+});
+
+// ---------- Колесо «Крейзи Дубай» ----------
+// Сектор выбирает сервер, браузер только докручивает анимацию до него.
+app.post("/api/wheel/spin", (req, res) => {
+  const key = wheel.clientKey(req);
+  const result = wheel.spin(key);
+  if (!result.ok) return res.status(409).json({ error: result.error, state: wheel.state(key) });
+  res.json({ ok: true, ...result, title: wheelConfig.title });
 });
 
 // ---------- Проверка промокода (до оплаты, чтобы показать новую цену) ----------
@@ -122,6 +152,20 @@ app.post("/api/checkout", async (req, res) => {
       promoCode = check.code;
     }
 
+    // Скидка с колеса «Крейзи Дубай». Браузер ничего о цене не решает:
+    // сервер сам смотрит, есть ли у этого IP живой (не сгоревший) выигрыш.
+    // Со скидкой режется и цена, и депозит на баре: 50% с обычного билета —
+    // платишь 600 ₽ и тратишь на баре тоже 600 ₽.
+    // С промокодом не суммируем — применяем то, что выгоднее покупателю.
+    const wheelKey = wheel.clientKey(req);
+    const wheelDiscount = wheel.discountFor(wheelKey, ticket);
+    let wheelPercent = null;
+    if (wheelDiscount && wheelDiscount.unitPrice < unitPrice) {
+      unitPrice = wheelDiscount.unitPrice;
+      wheelPercent = wheelDiscount.percent;
+      promoCode = null;
+    }
+
     // Доступность (критическая секция — без await до сохранения!)
     // pendingQty — билеты, зарезервированные под неоплаченные заказы ЮKassa.
     // Если limit не задан — билет продаётся без ограничения, проверять нечего.
@@ -151,6 +195,9 @@ app.post("/api/checkout", async (req, res) => {
         unitPrice,
         total,
         promo: promoCode,
+        wheel: wheelPercent, // процент скидки с колеса — фиксируем в базе
+        wheelKey: wheelPercent ? wheelKey : null,
+        fullPrice: ticket.price,
         contact: contactValue,
         contactType,
         createdAt: new Date().toISOString(),
@@ -159,6 +206,7 @@ app.post("/api/checkout", async (req, res) => {
         codes,
       };
       db.addOrder(order); // сохраняем синхронно
+      if (wheelPercent) db.markSpinUsed(wheelKey, order.id); // скидка потрачена
 
       // Уведомление тебе в Telegram (не блокирует ответ покупателю)
       const contactLabel = contactType === "phone" ? "Телефон" : "Telegram";
@@ -166,8 +214,8 @@ app.post("/api/checkout", async (req, res) => {
         `🎟 <b>Новая покупка — ${event.title}</b>\n` +
           `Билет: <b>${ticket.name}</b> × ${count}\n` +
           `Сумма: <b>${total === 0 ? "бесплатно (промокод)" : fmtMoney(total)}</b>\n` +
-          promoLine(promoCode, ticket.price, unitPrice, count) +
-          `Депозит на баре: <b>${unitPrice === 0 ? "нет" : fmtMoney(unitPrice)}</b> у каждого\n` +
+          discountLine(order, ticket.price) +
+          depositNote(ticket, unitPrice) +
           `${contactLabel}: ${contactValue}\n` +
           `Код(ы): <b>${codes.join(", ")}</b>\n` +
           soldLine(ticket)
@@ -182,6 +230,7 @@ app.post("/api/checkout", async (req, res) => {
           total,
           totalLabel: total === 0 ? "бесплатно по промокоду" : fmtMoney(total),
           contact: contactValue,
+          hasDeposit: ticket.deposit !== false,
           codes,
         },
       });
@@ -199,6 +248,8 @@ app.post("/api/checkout", async (req, res) => {
       unitPrice,
       total,
       promo: promoCode,
+      wheel: wheelPercent, // скидка с колеса фиксируется в заказе
+      wheelKey: wheelPercent ? wheelKey : null, // чей это выигрыш — погасим после оплаты
       fullPrice: ticket.price, // цена без скидки — для уведомления после оплаты
       contact: contactValue,
       contactType,
@@ -248,14 +299,16 @@ async function processPayment(paymentId) {
       codes.push(makeUniqueCode(ticket.codeFormat, db.codeExists));
     }
     db.markOrderPaid(order.id, codes); // синхронно
+    // Скидка колеса потрачена — второй раз её не применить
+    if (order.wheel && order.wheelKey) db.markSpinUsed(order.wheelKey, order.id);
 
     const contactLabel = order.contactType === "phone" ? "Телефон" : "Telegram";
     notifyAdmin(
       `🎟 <b>Новая покупка — ${event.title}</b>\n` +
         `Билет: <b>${order.ticketName}</b> × ${order.qty}\n` +
         `Сумма: <b>${fmtMoney(order.total)}</b>\n` +
-        promoLine(order.promo, order.fullPrice ?? ticket.price, order.unitPrice, order.qty) +
-        `Депозит на баре: <b>${fmtMoney(order.unitPrice)}</b> у каждого\n` +
+        discountLine(order, order.fullPrice ?? ticket.price) +
+        depositNote(ticket, order.unitPrice) +
         `${contactLabel}: ${order.contact}\n` +
         `Код(ы): <b>${codes.join(", ")}</b>\n` +
         soldLine(ticket)
@@ -310,6 +363,11 @@ app.get("/api/order-status", (req, res) => {
         qty: order.qty,
         total: order.total,
         totalLabel: fmtMoney(order.total),
+        // у входного билета депозита на баре нет — на странице пишем иначе
+        hasDeposit: ticketById[order.ticket]?.deposit !== false,
+        deposit: order.unitPrice,
+        depositLabel: fmtMoney(order.unitPrice),
+        wheel: order.wheel || null,
         codes: order.codes,
       },
     });
@@ -324,13 +382,20 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-// Депозит по коду для охраны: сколько человек заплатил (по промокоду — меньше)
+// Депозит по коду для охраны: сколько человек может потратить на баре.
+// По промокоду или скидке колеса — меньше, у входного билета депозита нет вовсе.
 function depositInfo(info) {
-  const deposit = info.deposit ?? ticketById[info.ticket]?.price ?? null;
+  const noDeposit = info.noDeposit ?? ticketById[info.ticket]?.deposit === false;
+  const deposit = noDeposit ? 0 : info.deposit ?? ticketById[info.ticket]?.price ?? null;
   return {
     deposit,
-    depositLabel: deposit === null ? "—" : deposit === 0 ? "бесплатно" : fmtMoney(deposit),
+    noDeposit,
+    depositLabel: noDeposit
+      ? "нет (входной билет)"
+      : deposit === null ? "—" : deposit === 0 ? "бесплатно" : fmtMoney(deposit),
+    paidRub: info.paidRub ?? deposit, // сколько реально заплачено
     promo: info.promo || null,
+    wheel: info.wheel || null, // процент скидки, выигранный на колесе
   };
 }
 
@@ -368,7 +433,9 @@ app.post("/api/checkin", requireAdmin, (req, res) => {
 app.get("/api/orders", requireAdmin, (req, res) => {
   const data = db.getDb();
   const sold = {};
-  tickets.forEach((t) => (sold[t.id] = { name: t.name, sold: db.soldCount(t.id), limit: t.limit }));
+  tickets.forEach(
+    (t) => (sold[t.id] = { name: t.name, sold: db.soldCount(t.id), limit: t.limit, hasDeposit: t.deposit !== false })
+  );
   res.json({ orders: data.orders, sold });
 });
 

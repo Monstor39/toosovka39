@@ -101,6 +101,233 @@ body::after {
   letter-spacing: 0.02em;
 }
 
+/* Главный оффер под заголовком — самая заметная строка на первом экране */
+.hero__offer {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 6vw, 2.2rem);
+  letter-spacing: 0.01em;
+  color: var(--gold-2);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
+}
+.hero__offer b {
+  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 40%, var(--gold-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.btn--hero {
+  margin-top: 20px;
+  min-width: 270px;
+  font-size: 1.08rem;
+  padding: 18px 34px;
+  animation: heroPulse 2.6s ease-in-out infinite;
+}
+@keyframes heroPulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(230, 192, 115, 0.32); }
+  50%      { box-shadow: 0 14px 44px rgba(230, 192, 115, 0.6); }
+}
+.hero__under {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Полоска доверия: снимает страх «а не развод ли это» */
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.trust span {
+  padding: 6px 13px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.42);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Колесо «Крейзи Дубай» ---------- */
+.wheelsec {
+  position: relative;
+  text-align: center;
+  margin: 4px 0 30px;
+  padding: 24px 18px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(214, 41, 118, 0.55);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(214, 41, 118, 0.22) 0%, rgba(10, 10, 16, 0.9) 62%),
+    rgba(10, 10, 16, 0.86);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 18px 60px rgba(214, 41, 118, 0.28);
+  overflow: hidden;
+}
+.wheelsec__badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #feda75, #d62976 55%, #962fbf);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.wheelsec__title {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.1rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 30%, #ff6ab8 70%, #b06bff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 22px rgba(214, 41, 118, 0.5));
+}
+.wheelsec__lead {
+  max-width: 460px;
+  margin: 8px auto 0;
+  color: var(--muted);
+  font-size: 0.97rem;
+  line-height: 1.55;
+}
+.wheelsec__lead b { color: var(--gold-2); }
+.wheelsec__small {
+  margin-top: 16px;
+  color: rgba(207, 201, 189, 0.75);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.wheel {
+  position: relative;
+  width: min(330px, 80vw);
+  aspect-ratio: 1;
+  margin: 24px auto 4px;
+}
+/* вращающееся пунктирное кольцо-«гирлянда» вокруг колеса */
+.wheel::before {
+  content: "";
+  position: absolute;
+  inset: -13px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 214, 130, 0.55);
+  animation: ringSpin 14s linear infinite;
+}
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+
+.wheel__disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 6px solid var(--gold);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.55), 0 0 60px rgba(230, 192, 115, 0.3);
+  /* сам градиент секторов ставит app.js — их число берётся с сервера */
+  transition: transform 5.4s cubic-bezier(0.16, 0.72, 0.12, 1);
+}
+.wheel__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 16px;
+  font-weight: 800;
+  font-size: clamp(0.82rem, 3.6vw, 1.05rem);
+  color: #17130a;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  transform: rotate(var(--a));
+}
+.wheel__label--top { color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); }
+/* Нижняя половина колеса: метку доворачиваем на 180° и прижимаем к низу,
+   иначе проценты стояли бы вверх ногами */
+.wheel__label--flip {
+  align-items: flex-end;
+  padding: 0 0 16px;
+}
+.wheel__pin {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 26px solid var(--gold-2);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+  z-index: 3;
+}
+.wheel__go {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 31%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid #fff5dd;
+  background: linear-gradient(135deg, #ff9ecb, #d62976 55%, #962fbf);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: clamp(0.72rem, 2.9vw, 0.9rem);
+  line-height: 1.05;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 24px rgba(214, 41, 118, 0.55);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  animation: goPulse 1.8s ease-in-out infinite;
+}
+.wheel__go:hover { transform: translate(-50%, -50%) scale(1.06); }
+.wheel__go:disabled { opacity: 0.75; cursor: default; animation: none; }
+@keyframes goPulse {
+  0%, 100% { box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 20px rgba(214, 41, 118, 0.45); }
+  50%      { box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 42px rgba(214, 41, 118, 0.9); }
+}
+
+/* Результат прокрута */
+.wres {
+  margin: 20px auto 0;
+  max-width: 420px;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--gold);
+  background: rgba(0, 0, 0, 0.45);
+  animation: pop 0.3s ease;
+}
+.wres__label { color: var(--muted); font-size: 0.9rem; }
+.wres__percent {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 16vw, 5rem);
+  line-height: 1.05;
+  margin: 2px 0 4px;
+  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 35%, #ff6ab8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 6px 26px rgba(230, 192, 115, 0.35));
+}
+.wres__timer { color: #ffd9d4; font-size: 0.95rem; margin-bottom: 14px; }
+.wres__timer b { color: #ff8f8f; font-variant-numeric: tabular-nums; }
+.wres__note { color: var(--muted); font-size: 0.82rem; line-height: 1.45; margin-top: 10px; }
+.wres--dead { border-color: rgba(255, 255, 255, 0.18); }
+.wres--dead .wres__label { font-weight: 700; color: var(--text); font-size: 1.05rem; margin-bottom: 6px; }
+.wres--dead .btn { margin-top: 14px; }
+
 /* ---------- Розыгрыш iPhone ---------- */
 .giveaway {
   position: relative;
@@ -338,6 +565,36 @@ body::after {
 }
 .ticket__desc { color: var(--muted); font-size: 0.98rem; }
 
+/* Цена со скидкой колеса: старую зачёркиваем, новую подсвечиваем */
+.ticket__price .old-price { font-size: 1.15rem; margin-right: 8px; }
+.ticket__save {
+  display: inline-block;
+  margin: -6px 0 12px;
+  padding: 4px 11px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #feda75, #d62976 55%, #962fbf);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+/* Короткая выгода под ценой: «вернётся баром» / «без депозита» */
+.ticket__hint {
+  margin: -6px 0 12px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--gold-2);
+}
+.ticket__hint--plain { color: var(--muted); font-weight: 500; }
+.ticket__left {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffb4a8;
+}
+/* Рекомендуемый билет — выделяем рамкой, он должен цеплять глаз первым */
+.ticket--hot { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(230,192,115,0.5), 0 16px 50px rgba(230,192,115,0.14); }
+
 .tickets__note {
   text-align: center;
   color: var(--muted);
@@ -345,6 +602,109 @@ body::after {
   margin-top: 24px;
   text-shadow: 0 1px 8px rgba(0,0,0,0.7);
 }
+
+/* ---------- Призы партнёров в блоке розыгрыша ---------- */
+.prizes {
+  max-width: 480px;
+  margin: 18px auto 0;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.32);
+  text-align: left;
+}
+.prizes__title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.prizes__list { list-style: none; display: grid; gap: 8px; }
+.prizes__list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.prizes__list li span { font-size: 1.15rem; }
+.prizes__list b { color: var(--text); }
+.prizes__more { margin-top: 12px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+.prizes__more a { color: var(--gold-2); font-weight: 700; text-decoration: underline; }
+
+/* ---------- Частые вопросы ---------- */
+.faq { padding: 26px 0 6px; }
+.faq__title {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5.6vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+}
+.faq__item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(12, 12, 18, 0.72);
+  backdrop-filter: blur(10px);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.faq__item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 15px 46px 15px 17px;
+  position: relative;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+.faq__item summary::-webkit-details-marker { display: none; }
+.faq__item summary::after {
+  content: "+";
+  position: absolute;
+  right: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gold);
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.faq__item[open] summary::after { content: "−"; }
+.faq__item[open] summary { color: var(--gold-2); }
+.faq__item p {
+  padding: 0 17px 16px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+.faq__item a { color: var(--gold-2); text-decoration: underline; }
+
+/* ---------- Липкая кнопка внизу экрана ---------- */
+.sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 16px calc(11px + env(safe-area-inset-bottom));
+  background: rgba(8, 8, 12, 0.92);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+  transform: translateY(110%);
+  transition: transform 0.28s ease;
+}
+.sticky[hidden] { display: flex; } /* прячем сдвигом, а не display — ради анимации */
+.sticky--on { transform: translateY(0); }
+.sticky__text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.sticky__text b { font-size: 1rem; color: var(--gold-2); white-space: nowrap; }
+.sticky__text span { font-size: 0.78rem; color: var(--muted); }
+.sticky .btn { min-width: 0; padding: 13px 24px; font-size: 0.95rem; flex: 0 0 auto; }
 
 /* ---------- 3 кнопки ---------- */
 .actions {
@@ -371,6 +731,8 @@ body::after {
 }
 .btn:hover { transform: translateY(-2px); }
 .ico { font-size: 1.1em; }
+
+.btn--full { width: 100%; }
 
 .btn--buy {
   background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
@@ -529,6 +891,19 @@ body.no-scroll { overflow: hidden; }
   margin-bottom: 10px;
 }
 .deposit-box b { color: var(--gold-2); }
+
+/* Плашка «скидка колеса применена» в окне покупки */
+.mwheel {
+  border-radius: 12px;
+  padding: 12px 15px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(254, 218, 117, 0.22), rgba(214, 41, 118, 0.32) 55%, rgba(150, 47, 191, 0.3));
+  border: 1px solid rgba(214, 41, 118, 0.6);
+}
+.mwheel b { color: #ffd98a; font-variant-numeric: tabular-nums; }
 .warn-box--big {
   text-align: center;
   font-size: 1rem;

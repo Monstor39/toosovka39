@@ -68,10 +68,16 @@
       // Цель для Яндекс.Метрики: успешная покупка
       if (typeof ym === "function")
         ym(110941103, "reachGoal", "purchase", { order_price: order.total, currency: "RUB" });
+
+      // У входного билета депозита на баре нет — пишем честно, чтобы не ждали зря
+      const info = order.hasDeposit
+        ? `Это ваш билет на <b>DUBAI PARTY</b>. На баре у вас <b>${order.depositLabel}</b> депозита на каждый билет — потратите их там же. По указанному контакту мы сможем связаться, чтобы не потеряться.`
+        : `Это ваш <b>входной билет</b> на <b>DUBAI PARTY</b>. Депозита на баре нет — бар оплачивается отдельно. По указанному контакту мы сможем связаться, чтобы не потеряться.`;
+
       card.innerHTML = `
         <div class="success__check">✓</div>
         <h3 class="success__title">Оплата прошла!</h3>
-        <p class="success__sub">${order.ticketName} × ${order.qty} · ${order.totalLabel}</p>
+        <p class="success__sub">${order.ticketName} × ${order.qty} · ${order.totalLabel}${order.wheel ? ` · колесо −${order.wheel}%` : ""}</p>
         <div class="warn-box warn-box--big">
           <span class="warn-box__title">⚠️ ВНИМАНИЕ</span>
           Обязательно сохраните код ниже — сделайте <b>СКРИНШОТ ЭКРАНА</b>.
@@ -79,7 +85,7 @@
         </div>
         <div class="codes">${order.codes.map((c) => `<div class="code">${c}</div>`).join("")}</div>
         <div class="success__info">
-          <p>Это ваш билет на <b>DUBAI PARTY</b>. Оплаченная сумма — <b>ваш депозит</b>, потратите её на баре. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
+          <p>${info}</p>
         </div>
         <a class="btn btn--buy btn--full" href="/" style="text-decoration:none">На главную</a>`;
     }

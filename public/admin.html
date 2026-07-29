@@ -89,11 +89,20 @@
     function headers() {
       return { "Content-Type": "application/json", "x-admin-password": pass };
     }
-    // Блок «депозит на баре» — сколько человек заплатил за этот билет
+    // Блок «депозит на баре» — сколько человек может потратить на баре.
+    // Откуда скидка (промокод или колесо) пишем рядом, чтобы не спорить с гостем.
     function depBlock(data) {
       if (!data.depositLabel) return "";
-      const promo = data.promo ? `<em>по промокоду ${data.promo}</em>` : "";
-      return `<span class="dep">💰 депозит ${data.depositLabel}${promo}</span>`;
+      const why = data.promo
+        ? `<em>по промокоду ${data.promo}</em>`
+        : data.wheel
+        ? `<em>скидка колеса −${data.wheel}%</em>`
+        : "";
+      if (data.noDeposit) {
+        const paid = data.paidRub ? ` <em>оплачено ${new Intl.NumberFormat("ru-RU").format(data.paidRub)} ₽</em>` : "";
+        return `<span class="dep">🎫 без депозита${paid}</span>`;
+      }
+      return `<span class="dep">💰 депозит ${data.depositLabel}${why}</span>`;
     }
     function render(status, data) {
       const r = document.getElementById("result");
@@ -151,8 +160,13 @@
       const rows = [];
       data.orders.slice().reverse().forEach((o) => {
         if (!o.paid) return; // неоплаченные заказы в базу входа не попадают
-        const dep = o.unitPrice === 0 ? "бесплатно" : money(o.unitPrice ?? 0);
-        const promo = o.promo ? `<br /><small>${o.promo}</small>` : "";
+        // У входного билета депозита на баре нет — пишем это, а не сумму
+        const dep = data.sold[o.ticket]?.hasDeposit === false
+          ? "без депозита"
+          : o.unitPrice === 0 ? "бесплатно" : money(o.unitPrice ?? 0);
+        const promo = o.promo
+          ? `<br /><small>${o.promo}</small>`
+          : o.wheel ? `<br /><small>колесо −${o.wheel}%</small>` : "";
         o.codes.forEach((c) => {
           rows.push(`<tr><td><b>${c}</b></td><td>${o.ticketName}</td><td>${dep}${promo}</td><td>${o.contact}</td></tr>`);
         });
