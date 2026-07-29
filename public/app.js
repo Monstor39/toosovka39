@@ -1,7 +1,7 @@
 const fmt = (n) => new Intl.NumberFormat("ru-RU").format(n) + " ₽";
 
 // promo — применённый промокод: { code, unitPrice, discountPerTicket, ... } с сервера
-// wheel — состояние колеса «Крейзи Дубай» с сервера: { state, sectors, index, percent, msLeft }
+// wheel — состояние колеса CRAZY DUBAI с сервера: { state, sectors, index, percent, msLeft }
 const state = {
   tickets: [],
   current: null,
@@ -100,7 +100,7 @@ function renderTickets() {
   });
 }
 
-/* ---------- Колесо «Крейзи Дубай» ---------- */
+/* ---------- Колесо CRAZY DUBAI ---------- */
 const wheelSec = $("wheelsec");
 const disc = $("wheel-disc");
 const goBtn = $("wheel-go");

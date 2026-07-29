@@ -38,7 +38,7 @@ function soldLine(ticket) {
 }
 
 // Строка про скидку для уведомления в Telegram (пусто, если скидки не было).
-// Скидка могла прийти из промокода или с колеса «Крейзи Дубай».
+// Скидка могла прийти из промокода или с колеса CRAZY DUBAI.
 function discountLine(order, fullPrice) {
   const saved = (fullPrice - order.unitPrice) * order.qty;
   if (order.promo) return `Промокод: <b>${order.promo}</b> (скидка ${fmtMoney(saved)})\n`;
@@ -87,7 +87,7 @@ app.get("/api/status", (req, res) => {
   });
 });
 
-// ---------- Колесо «Крейзи Дубай» ----------
+// ---------- Колесо CRAZY DUBAI ----------
 // Сектор выбирает сервер, браузер только докручивает анимацию до него.
 app.post("/api/wheel/spin", (req, res) => {
   const key = wheel.clientKey(req);
@@ -155,7 +155,7 @@ app.post("/api/checkout", async (req, res) => {
       promoCode = check.code;
     }
 
-    // Скидка с колеса «Крейзи Дубай». Браузер ничего о цене не решает:
+    // Скидка с колеса CRAZY DUBAI. Браузер ничего о цене не решает:
     // сервер сам смотрит, есть ли у этого IP живой (не сгоревший) выигрыш.
     // Со скидкой режется и цена, и депозит на баре: 50% с обычного билета —
     // платишь 600 ₽ и тратишь на баре тоже 600 ₽.
