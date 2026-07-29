@@ -18,7 +18,10 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "dubai2026";
 
 // За nginx: берём настоящий IP посетителя из X-Forwarded-For —
 // на нём держится правило колеса «один прокрут с одного IP».
-app.set("trust proxy", true);
+// Именно 1 (а не true): доверяем ровно одному прокси — нашему nginx. При true
+// Express взял бы самый левый адрес цепочки, а его любой может подставить
+// заголовком сам и крутить колесо сколько угодно.
+app.set("trust proxy", 1);
 
 app.use(express.json());
 
