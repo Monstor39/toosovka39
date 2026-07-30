@@ -1,7 +1,7 @@
 import "dotenv/config"; // ВАЖНО: грузим .env ДО остальных импортов, иначе бот не увидит токен
 import express from "express";
 import crypto from "crypto";
-import { event, currency, tickets, ticketById, wheel as wheelConfig, TEST_MODE } from "./config.js";
+import { event, currency, tickets, ticketById, manualTicket, wheel as wheelConfig, TEST_MODE } from "./config.js";
 import * as db from "./lib/db.js";
 import { makeUniqueCode } from "./lib/codes.js";
 import { notifyAdmin } from "./lib/telegram.js";
@@ -394,11 +394,13 @@ function depositInfo(info) {
     deposit,
     noDeposit,
     depositLabel: noDeposit
-      ? "нет (входной билет)"
+      ? `нет (${info.manual ? "гостевой код" : "входной билет"})`
       : deposit === null ? "—" : deposit === 0 ? "бесплатно" : fmtMoney(deposit),
     paidRub: info.paidRub ?? deposit, // сколько реально заплачено
     promo: info.promo || null,
     wheel: info.wheel || null, // процент скидки, выигранный на колесе
+    manual: !!info.manual, // код выдан вручную владельцем, а не куплен
+    test: !!info.test, // помечен тестовым — в статистике не считается
   };
 }
 
@@ -437,9 +439,38 @@ app.get("/api/orders", requireAdmin, (req, res) => {
   const data = db.getDb();
   const sold = {};
   tickets.forEach(
-    (t) => (sold[t.id] = { name: t.name, sold: db.soldCount(t.id), limit: t.limit, hasDeposit: t.deposit !== false })
+    (t) =>
+      (sold[t.id] = {
+        name: t.name,
+        sold: db.soldCount(t.id),
+        sum: db.soldSum(t.id), // на какую сумму продано
+        limit: t.limit,
+        hasDeposit: t.deposit !== false,
+      })
   );
-  res.json({ orders: data.orders, sold });
+  const c = db.counts();
+  // Коды, выданные вручную — отдельной строкой, это не продажа с сайта
+  if (c.manualCount) {
+    sold[manualTicket.id] = {
+      name: manualTicket.name,
+      sold: c.manualCount,
+      sum: c.cash,
+      limit: null,
+      hasDeposit: true,
+    };
+  }
+  res.json({
+    orders: data.orders,
+    sold,
+    money: {
+      revenue: c.revenue, // выручка сайта
+      cash: c.cash, // наличные за коды, выданные вручную
+      total: c.total,
+      deposits: c.depositTotal, // сколько депозитов выдано всего
+      barSpent: c.barSpent, // сколько на баре уже проели
+      testCount: c.testCount,
+    },
+  });
 });
 
 // Статика. Картинки/шрифты кэшируем в браузере надолго (афиша тяжёлая — качать
