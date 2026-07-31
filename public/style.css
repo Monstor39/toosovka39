@@ -70,24 +70,30 @@ body::after {
   letter-spacing: 0.02em;
   text-shadow: 0 1px 8px rgba(0,0,0,0.7);
 }
-/* Карта бара — по центру под шапкой: видно сразу, до всякой прокрутки */
+/* Карта бара — по центру под шапкой: видно сразу, до всякой прокрутки.
+   Кнопка залита золотом, поэтому цепляет глаз первой на тёмной афише;
+   главную «Взять билет» она не перебивает — та ниже и крупнее. */
 .topbar__menu {
   display: inline-flex;
   align-items: center;
+  gap: 9px;
   margin-top: 18px;
-  padding: 12px 26px;
+  padding: 14px 30px;
   border-radius: 100px;
-  border: 1px solid var(--gold);
-  background: rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(8px);
-  color: var(--gold-2);
-  font-size: 0.98rem;
-  font-weight: 700;
+  background: var(--gold-2);
+  color: #17130a;
+  font-size: 1.02rem;
+  font-weight: 800;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  transition: background 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 8px 28px rgba(230, 192, 115, 0.38);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
-.topbar__menu:hover { background: rgba(230, 192, 115, 0.12); transform: translateY(-2px); }
+.topbar__menu:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(230, 192, 115, 0.55);
+}
+.topbar__menu .ico { font-size: 1.15em; }
 
 /* ---------- Главный текст ---------- */
 .hero { text-align: center; padding: 0 0 30px; }
