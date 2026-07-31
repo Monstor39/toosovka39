@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DUBAI PARTY — билеты, 1 августа, Калининград</title>
-  <meta name="description" content="DUBAI PARTY — 1 августа, Калининград. Вход от 200 ₽. Билет за 1 200 ₽ — это депозит: всю сумму тратишь на баре, по сути вход бесплатный. Колесо CRAZY DUBAI — скидка до 60%. Разыграем iPhone 17 Pro Max. Вход строго по билетам." />
+  <title>DUBAI PARTY — вход бесплатный, сегодня, Калининград</title>
+  <meta name="description" content="DUBAI PARTY — уже сегодня вечером, Калининград. Вход бесплатный: заполни короткую анкету, оставь телеграм или телефон — и код на вход придёт сразу. Столы с депозитом 10 000 ₽. Вход строго по кодам, 18+." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="style.css" />
@@ -40,118 +40,40 @@
   <main class="page">
     <header class="topbar">
       <a class="brand" href="/">DUBAI<span>PARTY</span></a>
-      <p class="event-meta">1 августа · Правая Набережная 21 · Калининград</p>
+      <p class="event-meta">сегодня, в субботу · Правая Набережная 21 · Калининград</p>
       <!-- Карта бара: та же страница, на которую ведёт QR-код со столов -->
       <a class="topbar__menu" href="/menu"><span class="ico">🍸</span> Карта бара →</a>
     </header>
 
     <section class="hero">
-      <h1 class="hero__title">Калининград, мы сделали DUBAI PARTY.<br />Не хватает только тебя.</h1>
+      <h1 class="hero__title">DUBAI PARTY — уже сегодня.<br />Вход бесплатный.</h1>
 
-      <p class="hero__offer">Вход от <b>200 ₽</b></p>
+      <p class="hero__offer">Вход <b>0 ₽</b></p>
 
       <p class="hero__lead">
-        Билет за <b>1 200 ₽</b> — это <b>твой депозит</b>: всю сумму тратишь на баре,
-        по сути вход <b>бесплатный</b>. Не хочешь депозит — есть просто вход за 200 ₽.
+        Вас <b>много</b> — а мы хотим, чтобы было <b>ещё больше</b>. Поэтому вход сегодня
+        <b>бесплатный для всех</b>: заполни короткую анкету — оставь телеграм или номер телефона,
+        мы внесём тебя в базу и код на вход появится сразу на экране.
       </p>
 
-      <button class="btn btn--buy btn--hero" data-scroll="tickets">Взять билет →</button>
-      <p class="hero__under">Займёт 30 секунд · код приходит сразу после оплаты</p>
+      <button class="btn btn--buy btn--hero" data-scroll="tickets">Заполнить анкету →</button>
+      <p class="hero__under">30 секунд · код сразу на экране · платить не нужно</p>
 
       <div class="trust">
-        <span>Оплата через ЮKassa</span>
+        <span>Вход бесплатный</span>
         <span>Код сразу на экране</span>
-        <span>Вход по билетам</span>
+        <span>Вход по кодам</span>
         <span>18+</span>
       </div>
     </section>
 
-    <!-- ---------- Колесо CRAZY DUBAI ---------- -->
-    <section class="wheelsec" id="wheelsec" hidden>
-      <span class="wheelsec__badge">Скидка на билет</span>
-      <h2 class="wheelsec__title">CRAZY DUBAI</h2>
-      <p class="wheelsec__lead">
-        Один прокрут — одна скидка на билет <b>с депозитом</b>. Может выпасть и <b>−60%</b>.
-        Крутить можно <b>только один раз</b>, второй попытки не будет.
-      </p>
-
-      <div class="wheel">
-        <div class="wheel__pin"></div>
-        <div class="wheel__disc" id="wheel-disc"></div>
-        <button class="wheel__go" id="wheel-go">КРУ<br />ТИТЬ</button>
-      </div>
-
-      <!-- Выигрыш -->
-      <div class="wres" id="wheel-result" hidden>
-        <p class="wres__label">Твоя скидка на билет с депозитом</p>
-        <p class="wres__percent" id="wheel-percent">−25%</p>
-        <p class="wres__timer">Сгорит через <b id="wheel-timer">15:00</b></p>
-        <button class="btn btn--buy btn--full" id="wheel-take">Забрать скидку →</button>
-        <p class="wres__note">
-          Скидка режет и цену, и депозит: платишь меньше — и на баре у тебя эта же сумма.<br />
-          ⚠️ Твоё устройство мы видим <b>по IP</b>: этот прокрут — единственный.
-          Обновишь страницу, зайдёшь с другого браузера или в режиме инкогнито — колесо больше не даст крутить,
-          а скидка сгорит через 15 минут.
-        </p>
-      </div>
-
-      <!-- Скидка сгорела / уже использована -->
-      <div class="wres wres--dead" id="wheel-dead" hidden>
-        <p class="wres__label" id="wheel-dead-title">Скидка сгорела</p>
-        <p class="wres__note" id="wheel-dead-text">Колесо крутится один раз с устройства. Но билеты на месте — забирай без скидки, депозит всё равно возвращается баром.</p>
-        <button class="btn btn--buy btn--full" data-scroll="tickets">К билетам →</button>
-      </div>
-
-      <p class="wheelsec__small">
-        Скидка живёт 15 минут после прокрута — не успел купить, сгорает навсегда.
-        Устройство определяется по IP, поэтому прокрут только один: обновление страницы, другой браузер
-        или инкогнито не помогут. На входной билет за 200 ₽ скидка не действует.
-      </p>
-    </section>
-
-    <!-- ---------- Билеты ---------- -->
+    <!-- ---------- Варианты входа ---------- -->
     <section class="tickets" id="tickets">
       <h2 class="tickets__title">Выбери свой вариант</h2>
       <div class="tickets__grid" id="tickets-grid">
         <div class="tickets__loading">Загрузка…</div>
       </div>
-      <p class="tickets__note">Нажми на билет, чтобы купить. Вход строго по билетам — без кода на вход не пустят.</p>
-    </section>
-
-    <!-- ---------- Розыгрыш ---------- -->
-    <section class="giveaway">
-      <span class="giveaway__badge">Розыгрыш 1 августа</span>
-      <p class="giveaway__if">Если разберут все 300 билетов —</p>
-      <h2 class="giveaway__prize">мы разыграем<span>iPhone 17 Pro Max</span></h2>
-      <p class="giveaway__lead">Разыграем вживую, прямо на вечеринке, среди своих.</p>
-
-      <div class="prizes">
-        <p class="prizes__title">И это не всё — призы от партнёров:</p>
-        <ul class="prizes__list">
-          <li>Детейлинг — <b>полировка фар</b></li>
-          <li><b>Маникюр</b></li>
-          <li><b>Абонемент в компьютерный зал</b> на посещения</li>
-          <li><b>Абонемент в фотостудию</b></li>
-        </ul>
-        <p class="prizes__more">Все подробности — в Instagram <a href="https://instagram.com/imgolod" target="_blank" rel="noopener">@imgolod</a></p>
-      </div>
-
-      <p class="giveaway__how">Что нужно сделать, чтобы участвовать:</p>
-      <ol class="giveaway__rules">
-        <li><b>Купи билет</b> на вечеринку — код на билете и есть твой номер в розыгрыше</li>
-        <li><b>Подпишись</b> на Instagram
-          <a href="https://instagram.com/imgolod" target="_blank" rel="noopener">@imgolod</a>
-          и <b>репостни этот рилс</b> к себе в сторис —
-          <a href="https://www.instagram.com/reel/DbUSGz5obZj/" target="_blank" rel="noopener">открыть рилс</a>.
-          Без подписки и репоста участие не засчитается</li>
-        <li><b>Приходи 1 августа</b> и будь в зале, когда мы разыгрываем — победителя тянем только среди тех, кто пришёл</li>
-      </ol>
-
-      <a class="giveaway__reel" href="https://www.instagram.com/reel/DbUSGz5obZj/" target="_blank" rel="noopener">
-        Открыть рилс и сделать репост →
-      </a>
-
-      <p class="giveaway__final">Твой билет — твой шанс выиграть iPhone 17 Pro Max</p>
+      <p class="tickets__note">Нажми на карточку и заполни анкету. Вход строго по кодам — без кода на вход не пустят.</p>
     </section>
 
     <!-- ---------- Частые вопросы ---------- -->
@@ -159,43 +81,33 @@
       <h2 class="faq__title">Частые вопросы</h2>
 
       <details class="faq__item">
-        <summary>1 200 ₽ — это правда депозит?</summary>
-        <p>Да. Приходишь, показываешь код на входе — и всю сумму тратишь на баре: коктейли, шоты, что захочешь. Деньги остаются у тебя, просто в стакане. Поэтому вход и получается бесплатным.</p>
+        <summary>Вход правда бесплатный?</summary>
+        <p>Да, полностью. Вас уже много, а мы хотим, чтобы было ещё больше — поэтому сегодня вход свободный для всех. Платить не нужно ни на сайте, ни на входе.</p>
       </details>
 
       <details class="faq__item">
-        <summary>А если я не хочу депозит?</summary>
-        <p>Бери входной билет за 200 ₽. Это просто вход на вечеринку, бар оплачиваешь отдельно — как в любом заведении.</p>
+        <summary>Зачем тогда анкета?</summary>
+        <p>Чтобы мы понимали, сколько вас будет, и могли связаться, если что-то изменится. Оставляешь телеграм или номер телефона — попадаешь в базу гостей и получаешь код на вход. Больше ничего не требуется.</p>
       </details>
 
       <details class="faq__item">
-        <summary>Зачем тогда платить 200 ₽ за вход?</summary>
-        <p>Чтобы билеты не разбирали боты и случайные люди. 200 ₽ — это формальность и пропуск, а не депозит: на баре они не тратятся.</p>
+        <summary>Что такое стол с депозитом?</summary>
+        <p>Свой стол на компанию до 4 человек. 10 000 ₽ — это депозит: всю сумму вы тратите за столом на баре, деньги остаются у вас, просто в стакане. Столов немного, разбирают быстро.</p>
       </details>
 
       <details class="faq__item">
-        <summary>Как работает колесо CRAZY DUBAI?</summary>
-        <p>Крутишь один раз — выпадает скидка от 5% до 60% на билет с депозитом. Скидка живёт 15 минут: успел купить — твоя, не успел — сгорела навсегда, второй раз крутить нельзя. Скидка режет и цену, и депозит: выпало −50% — платишь 600 ₽ и на баре у тебя тоже 600 ₽.</p>
-      </details>
-
-      <details class="faq__item">
-        <summary>Что делать с кодом после оплаты?</summary>
+        <summary>Что делать с кодом?</summary>
         <p>Сохрани его — сделай скриншот. На входе показываешь код охране, она гасит его в системе. Код работает один раз, так что не выкладывай его в общий чат.</p>
       </details>
 
       <details class="faq__item">
-        <summary>Можно взять несколько билетов сразу?</summary>
-        <p>Да, до 20 штук за раз. На каждый билет придёт свой отдельный код — раздашь друзьям.</p>
-      </details>
-
-      <details class="faq__item">
-        <summary>Оплата безопасная?</summary>
-        <p>Оплата идёт через ЮKassa (Сбер, карты любых банков). Мы не видим и не храним данные карты, а код появляется на экране сразу после успешной оплаты.</p>
+        <summary>Можно взять коды на друзей?</summary>
+        <p>Да, до 6 штук за раз. На каждого придёт свой отдельный код — раздашь компании.</p>
       </details>
 
       <details class="faq__item">
         <summary>Потерял код — что делать?</summary>
-        <p>Напиши нам в Telegram <a href="https://t.me/TOOSOVKA39" target="_blank" rel="noopener">@TOOSOVKA39</a>. Найдём тебя по номеру или нику, который ты указал при покупке, и пришлём код заново.</p>
+        <p>Напиши нам в Telegram <a href="https://t.me/TOOSOVKA39" target="_blank" rel="noopener">@TOOSOVKA39</a>. Найдём тебя по номеру или нику, который ты указал в анкете, и пришлём код заново.</p>
       </details>
 
       <details class="faq__item">
@@ -212,17 +124,17 @@
 
     <footer class="footer">
       <div class="footer__logo">DUBAI<span>PARTY</span></div>
-      <p class="footer__small">1 августа · Калининград · 18+</p>
+      <p class="footer__small">сегодня · Калининград · 18+</p>
     </footer>
   </main>
 
   <!-- Липкая кнопка внизу экрана -->
   <div class="sticky" id="sticky" hidden>
     <div class="sticky__text">
-      <b id="sticky-price">Вход от 200 ₽</b>
-      <span>Вход строго по билетам</span>
+      <b id="sticky-price">Вход бесплатный</b>
+      <span>Нужна только анкета</span>
     </div>
-    <button class="btn btn--buy" data-scroll="tickets">Взять билет</button>
+    <button class="btn btn--buy" data-scroll="tickets">Заполнить</button>
   </div>
 
   <!-- Окно оформления -->
@@ -238,13 +150,8 @@
         <div class="modal__price" id="m-price"></div>
         <p class="modal__desc" id="m-desc"></p>
 
-        <!-- Скидка с колеса CRAZY DUBAI -->
-        <div class="mwheel" id="m-wheel" hidden>
-          Скидка колеса <b id="m-wheel-pct">−25%</b> уже применена · сгорит через <b id="m-wheel-timer">15:00</b>
-        </div>
-
         <div class="qty">
-          <span>Количество</span>
+          <span>Сколько человек</span>
           <div class="qty__controls">
             <button class="qty__btn" id="qty-minus" aria-label="Меньше">−</button>
             <span class="qty__value" id="qty-value">1</span>
@@ -257,27 +164,12 @@
           <input type="text" id="f-contact" placeholder="+7 900 000-00-00 или @nickname" autocomplete="off" />
         </label>
 
-        <!-- Промокод: блок показываем, только если на этот билет есть действующий промокод -->
-        <div class="promo" id="promo-box" hidden>
-          <span class="promo__label">Промокод</span>
-          <div class="promo__row">
-            <input type="text" id="f-promo" placeholder="Введите промокод" autocomplete="off" autocapitalize="characters" />
-            <button type="button" class="promo__btn" id="promo-btn">Применить</button>
-          </div>
-          <p class="promo__msg" id="promo-msg" hidden></p>
-        </div>
-
         <div class="deposit-box" id="m-deposit-box">
-          Эта сумма — <b>ваш депозит</b>: вы тратите её на баре. По сути вход бесплатный.
+          Эта сумма — <b>ваш депозит</b>: вы тратите её за столом на баре.
         </div>
 
         <div class="warn-box warn-box--sm">
-          <b>Вход строго по билетам.</b> После оплаты вы получите <b>уникальный код</b> — обязательно сохраните его (скриншот). Это ваш билет для входа, его проверит охрана.
-        </div>
-
-        <div class="modal__discount" id="m-discount" hidden>
-          <span id="m-discount-label">Скидка по промокоду</span>
-          <strong id="m-discount-value"></strong>
+          <b>Вход строго по кодам.</b> Сразу после анкеты вы получите <b>уникальный код</b> — обязательно сохраните его (скриншот). Это ваш пропуск, его проверит охрана.
         </div>
 
         <div class="modal__total">
@@ -286,26 +178,26 @@
         </div>
 
         <p class="modal__error" id="m-error" hidden></p>
-        <button class="btn btn--buy btn--full" id="pay-btn">Оплатить</button>
+        <button class="btn btn--buy btn--full" id="pay-btn">Получить код</button>
         <p class="modal__note" id="m-note"></p>
       </div>
 
       <!-- Шаг 2: успех + код -->
       <div id="step-success" hidden>
         <div class="success__check">✓</div>
-        <h3 class="success__title">Оплата прошла!</h3>
+        <h3 class="success__title" id="s-title">Ты в списке!</h3>
         <p class="success__sub" id="s-sub"></p>
 
         <div class="warn-box warn-box--big">
           <span class="warn-box__title">⚠️ ВНИМАНИЕ</span>
           Обязательно сохраните код ниже — сделайте <b>СКРИНШОТ ЭКРАНА</b>.
-          Вход <b>строго по билетам</b>: без кода на вход не пустят, его нужно показать охране.
+          Вход <b>строго по кодам</b>: без кода на вход не пустят, его нужно показать охране.
         </div>
 
         <div class="codes" id="s-codes"></div>
 
         <div class="success__info">
-          <p id="s-info">Это ваш билет на <b>DUBAI PARTY</b>. Оплаченная сумма — <b>ваш депозит</b>, потратите её на баре. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
+          <p id="s-info">Это ваш пропуск на <b>DUBAI PARTY</b> сегодня вечером. По указанному контакту мы сможем связаться, чтобы не потеряться.</p>
         </div>
         <button class="btn btn--full" id="done-btn">Готово</button>
       </div>

@@ -29,7 +29,7 @@
     .result.bad { background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; }
     .result .big { font-size: 1.5rem; font-weight: 800; display: block; margin-bottom: 6px; }
     .result small { color: #bbb; display: block; margin-top: 8px; }
-    /* Депозит — охране важно видеть сразу: 1 200 ₽ или 800 ₽ по промокоду */
+    /* Депозит — охране важно видеть сразу: 10 000 ₽ за стол или «без депозита» */
     .result .dep { display: block; margin-top: 10px; font-size: 1.3rem; font-weight: 800; color: #e6c073; }
     .result .dep em { display: block; font-size: 0.8rem; font-style: normal; color: #bbb; font-weight: 400; margin-top: 2px; }
     .link { text-align: center; margin-top: 20px; }
@@ -90,21 +90,15 @@
       return { "Content-Type": "application/json", "x-admin-password": pass };
     }
     // Блок «депозит на баре» — сколько человек может потратить на баре.
-    // Откуда скидка (промокод или колесо) пишем рядом, чтобы не спорить с гостем.
     function depBlock(data) {
       if (!data.depositLabel) return "";
-      const why = data.promo
-        ? `<em>по промокоду ${data.promo}</em>`
-        : data.wheel
-        ? `<em>скидка колеса −${data.wheel}%</em>`
-        : "";
       const mark = data.manual ? `<em>🎁 код выдан вручную</em>` : "";
       const test = data.test ? `<em>🧪 тестовый — в статистике не считается</em>` : "";
       if (data.noDeposit) {
         const paid = data.paidRub ? ` <em>оплачено ${new Intl.NumberFormat("ru-RU").format(data.paidRub)} ₽</em>` : "";
         return `<span class="dep">🎫 без депозита${paid}${mark}${test}</span>`;
       }
-      return `<span class="dep">💰 депозит ${data.depositLabel}${why}${mark}${test}</span>`;
+      return `<span class="dep">💰 депозит ${data.depositLabel}${mark}${test}</span>`;
     }
     function render(status, data) {
       const r = document.getElementById("result");
@@ -168,19 +162,16 @@
       data.orders.slice().reverse().forEach((o) => {
         if (!o.paid) return; // неоплаченные заказы в базу входа не попадают
         if (o.test) return; // тестовые записи в статистику и базу входа не идут
-        // У входного билета депозита на баре нет — пишем это, а не сумму
+        // У бесплатного входа депозита на баре нет — пишем это, а не сумму
         const dep = data.sold[o.ticket]?.hasDeposit === false || o.unitPrice === 0
           ? "без депозита"
           : money(o.unitPrice ?? 0);
-        const promo = o.promo
-          ? `<br /><small>${o.promo}</small>`
-          : o.wheel ? `<br /><small>колесо −${o.wheel}%</small>` : "";
         // Код, выданный вручную: денег могло не быть вовсе — помечаем
         const mark = o.manual
           ? `<br /><small>🎁 вручную${o.total ? `, нал ${money(o.total)}` : ", подарок"}</small>`
           : "";
         o.codes.forEach((c) => {
-          rows.push(`<tr><td><b>${c}</b></td><td>${o.ticketName}</td><td>${dep}${promo}${mark}</td><td>${o.contact}</td></tr>`);
+          rows.push(`<tr><td><b>${c}</b></td><td>${o.ticketName}</td><td>${dep}${mark}</td><td>${o.contact}</td></tr>`);
         });
       });
       document.getElementById("ordersBody").innerHTML = rows.join("") || '<tr><td colspan="4">Пока нет заказов</td></tr>';

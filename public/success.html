@@ -64,24 +64,23 @@
     const orderId = new URLSearchParams(location.search).get("order");
 
     function showPaid(order) {
-      document.title = "DUBAI PARTY — билет куплен";
-      // Цель для Яндекс.Метрики: успешная покупка
+      document.title = "DUBAI PARTY — стол забронирован";
+      // Цель для Яндекс.Метрики: успешная оплата
       if (typeof ym === "function")
         ym(110941103, "reachGoal", "purchase", { order_price: order.total, currency: "RUB" });
 
-      // У входного билета депозита на баре нет — пишем честно, чтобы не ждали зря
       const info = order.hasDeposit
-        ? `Это ваш билет на <b>DUBAI PARTY</b>. На баре у вас <b>${order.depositLabel}</b> депозита на каждый билет — потратите их там же. По указанному контакту мы сможем связаться, чтобы не потеряться.`
-        : `Это ваш <b>входной билет</b> на <b>DUBAI PARTY</b>. Депозита на баре нет — бар оплачивается отдельно. По указанному контакту мы сможем связаться, чтобы не потеряться.`;
+        ? `Это ваш пропуск на <b>DUBAI PARTY</b>. На баре у вас <b>${order.depositLabel}</b> депозита — потратите их за столом. По указанному контакту мы сможем связаться, чтобы не потеряться.`
+        : `Это ваш пропуск на <b>DUBAI PARTY</b>. Депозита на баре нет — бар оплачивается отдельно. По указанному контакту мы сможем связаться, чтобы не потеряться.`;
 
       card.innerHTML = `
         <div class="success__check">✓</div>
         <h3 class="success__title">Оплата прошла!</h3>
-        <p class="success__sub">${order.ticketName} × ${order.qty} · ${order.totalLabel}${order.wheel ? ` · колесо −${order.wheel}%` : ""}</p>
+        <p class="success__sub">${order.ticketName} × ${order.qty} · ${order.totalLabel}</p>
         <div class="warn-box warn-box--big">
           <span class="warn-box__title">⚠️ ВНИМАНИЕ</span>
           Обязательно сохраните код ниже — сделайте <b>СКРИНШОТ ЭКРАНА</b>.
-          Вход <b>строго по билетам</b>: без кода на вход не пустят, его нужно показать охране.
+          Вход <b>строго по кодам</b>: без кода на вход не пустят, его нужно показать охране.
         </div>
         <div class="codes">${order.codes.map((c) => `<div class="code">${c}</div>`).join("")}</div>
         <div class="success__info">
@@ -111,7 +110,7 @@
         const data = await res.json();
         if (data.status === "paid") return showPaid(data.order);
         if (data.status === "canceled")
-          return showFail("Оплата не прошла", "Платёж отменён — деньги не списаны. Попробуйте купить билет ещё раз.");
+          return showFail("Оплата не прошла", "Платёж отменён — деньги не списаны. Попробуйте забронировать стол ещё раз.");
         if (data.status === "not_found")
           return showFail("Заказ не найден", "Если деньги списались — напишите нам, мы всё решим.");
       } catch (e) { /* сеть моргнула — попробуем ещё раз */ }
