@@ -79,7 +79,7 @@ function renderTickets() {
 
     // Короткая выгода под ценой — понятнее, чем длинное описание
     const hint = t.hasDeposit
-      ? `<p class="ticket__hint">💸 Вся сумма вернётся к тебе баром</p>`
+      ? `<p class="ticket__hint">Вся сумма вернётся к тебе баром</p>`
       : `<p class="ticket__hint ticket__hint--plain">Просто вход, бар оплачивается отдельно</p>`;
 
     card.innerHTML = `
@@ -106,9 +106,9 @@ const disc = $("wheel-disc");
 const goBtn = $("wheel-go");
 let discAngle = 0; // текущий угол диска (растёт, чтобы крутить всегда вперёд)
 
-// Цвета секторов чередуются: светлый золотой / тёмный «инстаграмный»
+// Цвета секторов чередуются: золото / тёмный — метки на обоих читаются
 const SECTOR_LIGHT = "rgba(255, 226, 160, 0.92)";
-const SECTOR_DARK = "rgba(150, 47, 191, 0.85)";
+const SECTOR_DARK = "rgba(16, 16, 24, 0.92)";
 
 function drawWheel(sectors) {
   const step = 360 / sectors.length;

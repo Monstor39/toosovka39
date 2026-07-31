@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <!-- пинч-зум разрешён специально: меню читают с телефона и увеличивают пальцами -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060a" />
+  <title>Меню бара — DUBAI PARTY</title>
+  <meta name="description" content="Барное меню DUBAI PARTY: фирменные коктейли, классика, шоты и сеты шотов." />
+  <meta property="og:title" content="Меню бара — DUBAI PARTY" />
+  <meta property="og:image" content="https://toosovka39.ru/menu.jpg" />
+
+  <!-- Картинка меню — единственное тяжёлое на странице, поэтому качаем её первой -->
+  <link rel="preload" as="image" href="menu.webp" type="image/webp" fetchpriority="high" />
+
+  <!-- Стили встроены в страницу: со сканера QR это на один запрос меньше -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --gold: #e6c073; --line: rgba(230, 192, 115, 0.22); }
+    html, body { height: 100%; }
+    body {
+      background: #06060a;
+      color: #f4f1ea;
+      font: 400 16px/1.5 "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+      display: flex;
+      flex-direction: column;
+      -webkit-text-size-adjust: 100%;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- Шапка ---------- */
+    .bar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .bar__back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #cfc9bd;
+      padding: 6px 2px;
+    }
+    .bar__title {
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .bar__full {
+      font-size: 0.85rem;
+      color: #cfc9bd;
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      padding: 6px 12px;
+      white-space: nowrap;
+    }
+    /* На узких телефонах три элемента в строку не влезают — прячем заголовок,
+       кнопки «назад» и «оригинал» важнее */
+    @media (max-width: 400px) { .bar__title { display: none; } }
+
+    /* ---------- Само меню ---------- */
+    .viewer {
+      flex: 1 1 auto;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* размер задаём картинке через <picture> — иначе во флекс-контейнере
+       ширина img в процентах считать не от чего */
+    .viewer picture { display: block; flex: none; width: 100%; max-width: 1280px; }
+    .viewer img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      cursor: zoom-in;
+      /* пока картинка летит по сети — на её месте размытая мини-копия, экран не пустой */
+      background: #0b0b10 url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAVACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDmraymvXLxqOCOO1NWNmnaMRJuDY54wals7+SwB24IYA4qH7Q3nNMwBZyT+NZLmu77Gnu6BICrlPLjJB6inxWk5heYKpUjPWomYyNnYRu/WnCWVY2QBwvT2ptBpdkbDcmT2pjHIA9KKKaZLJUupIyu0j5enFSfbpnjdGIw554oooaTWo+Z7XP/2Q==") center / cover no-repeat;
+      aspect-ratio: 3 / 2;
+    }
+    /* Приближено: картинка шире экрана, двигаем её пальцем */
+    .viewer--zoom { align-items: flex-start; justify-content: flex-start; }
+    .viewer--zoom picture { width: 260%; max-width: none; }
+    .viewer--zoom img { cursor: zoom-out; }
+
+    /* ---------- Низ: подсказка и кнопка ---------- */
+    .foot {
+      flex: 0 0 auto;
+      text-align: center;
+      padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+    }
+    .hint { font-size: 0.8rem; color: #8f8a80; margin-bottom: 9px; }
+    .buy {
+      display: block;
+      padding: 14px 22px;
+      border-radius: 100px;
+      background: var(--gold);
+      color: #17130a;
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+    @media (min-width: 700px) {
+      .buy { display: inline-block; min-width: 260px; }
+    }
+    /* На альбомной ориентации телефона меню и так во весь экран — подсказка не нужна */
+    @media (max-height: 480px) { .hint { display: none; } }
+  </style>
+</head>
+<body>
+
+  <header class="bar">
+    <a class="bar__back" href="/">← На сайт</a>
+    <span class="bar__title">Меню бара</span>
+    <a class="bar__full" href="menu.webp" target="_blank" rel="noopener">Оригинал</a>
+  </header>
+
+  <div class="viewer" id="viewer">
+    <picture>
+      <source srcset="menu.webp" type="image/webp" />
+      <img src="menu.jpg" alt="Барное меню DUBAI PARTY: коктейли, шоты, сеты шотов"
+           id="menu-img" width="1536" height="1024" fetchpriority="high" decoding="async" />
+    </picture>
+  </div>
+
+  <div class="foot">
+    <p class="hint" id="hint">Нажми на меню, чтобы приблизить · поверни телефон боком — станет крупнее</p>
+    <a class="buy" href="/#tickets">Взять билет на вечеринку →</a>
+  </div>
+
+  <script>
+    // Тап по меню — приближение к тому месту, куда ткнули (двумя пальцами тоже работает).
+    var viewer = document.getElementById("viewer");
+    var img = document.getElementById("menu-img");
+    var hint = document.getElementById("hint");
+
+    img.addEventListener("click", function (e) {
+      var zoom = !viewer.classList.contains("viewer--zoom");
+      // куда ткнули — в долях ширины/высоты картинки, чтобы после зума показать это же место
+      var r = img.getBoundingClientRect();
+      var fx = (e.clientX - r.left) / r.width;
+      var fy = (e.clientY - r.top) / r.height;
+
+      viewer.classList.toggle("viewer--zoom", zoom);
+      if (zoom) {
+        viewer.scrollLeft = fx * img.offsetWidth - viewer.clientWidth / 2;
+        viewer.scrollTop = fy * img.offsetHeight - viewer.clientHeight / 2;
+        hint.textContent = "Нажми ещё раз, чтобы отдалить";
+      } else {
+        viewer.scrollTo(0, 0);
+        hint.textContent = "Нажми на меню, чтобы приблизить · поверни телефон боком — станет крупнее";
+      }
+    });
+
+    img.addEventListener("load", function () {
+      img.style.background = "none"; // убираем размытую заглушку под картинкой
+    });
+  </script>
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    ym(110941103, "init", { clickmap: true, trackLinks: true, accurateTrackBounce: true });
+    ym(110941103, "reachGoal", "menu");
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/110941103" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+</body>
+</html>

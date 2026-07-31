@@ -39,7 +39,11 @@
 
   <main class="page">
     <header class="topbar">
-      <div class="brand">DUBAI<span>PARTY</span></div>
+      <div class="topbar__row">
+        <a class="brand" href="/">DUBAI<span>PARTY</span></a>
+        <!-- Меню бара: та же страница, на которую ведёт QR-код со столов -->
+        <a class="topbar__menu" href="/menu">Меню бара</a>
+      </div>
       <p class="event-meta">1 августа · Правая Набережная 21 · Калининград</p>
     </header>
 
@@ -49,25 +53,24 @@
       <p class="hero__offer">Вход от <b>200 ₽</b></p>
 
       <p class="hero__lead">
-        Берёшь билет за <b>1 200 ₽</b> — и это <b>твой депозит</b>: всю сумму ты тратишь на баре.
-        Деньги не уходят никуда, они возвращаются к тебе коктейлями — по сути вход <b>бесплатный</b>.
-        Не хочешь депозит — есть <b>просто вход за 200 ₽</b>.
+        Билет за <b>1 200 ₽</b> — это <b>твой депозит</b>: всю сумму тратишь на баре,
+        по сути вход <b>бесплатный</b>. Не хочешь депозит — есть просто вход за 200 ₽.
       </p>
 
       <button class="btn btn--buy btn--hero" data-scroll="tickets">Взять билет →</button>
       <p class="hero__under">Займёт 30 секунд · код приходит сразу после оплаты</p>
 
       <div class="trust">
-        <span>🔒 Оплата через ЮKassa</span>
-        <span>⚡ Код сразу на экране</span>
-        <span>🚫 Вход строго по билетам</span>
+        <span>Оплата через ЮKassa</span>
+        <span>Код сразу на экране</span>
+        <span>Вход по билетам</span>
         <span>18+</span>
       </div>
     </section>
 
     <!-- ---------- Колесо CRAZY DUBAI ---------- -->
     <section class="wheelsec" id="wheelsec" hidden>
-      <span class="wheelsec__badge">🎡 Скидка на билет</span>
+      <span class="wheelsec__badge">Скидка на билет</span>
       <h2 class="wheelsec__title">CRAZY DUBAI</h2>
       <p class="wheelsec__lead">
         Один прокрут — одна скидка на билет <b>с депозитом</b>. Может выпасть и <b>−60%</b>.
@@ -119,7 +122,7 @@
 
     <!-- ---------- Розыгрыш ---------- -->
     <section class="giveaway">
-      <span class="giveaway__badge">🎁 Розыгрыш 1 августа</span>
+      <span class="giveaway__badge">Розыгрыш 1 августа</span>
       <p class="giveaway__if">Если разберут все 300 билетов —</p>
       <h2 class="giveaway__prize">мы разыграем<span>iPhone 17 Pro Max</span></h2>
       <p class="giveaway__lead">Разыграем вживую, прямо на вечеринке, среди своих.</p>
@@ -127,10 +130,10 @@
       <div class="prizes">
         <p class="prizes__title">И это не всё — призы от партнёров:</p>
         <ul class="prizes__list">
-          <li><span>💡</span> Детейлинг — <b>полировка фар</b></li>
-          <li><span>💅</span> <b>Маникюр</b></li>
-          <li><span>🖥️</span> <b>Абонемент в компьютерный зал</b> на посещения</li>
-          <li><span>📸</span> <b>Абонемент в фотостудию</b></li>
+          <li>Детейлинг — <b>полировка фар</b></li>
+          <li><b>Маникюр</b></li>
+          <li><b>Абонемент в компьютерный зал</b> на посещения</li>
+          <li><b>Абонемент в фотостудию</b></li>
         </ul>
         <p class="prizes__more">Все подробности — в Instagram <a href="https://instagram.com/imgolod" target="_blank" rel="noopener">@imgolod</a></p>
       </div>
@@ -147,7 +150,7 @@
       </ol>
 
       <a class="giveaway__reel" href="https://www.instagram.com/reel/DbUSGz5obZj/" target="_blank" rel="noopener">
-        <span class="ico">📷</span> Открыть рилс и сделать репост
+        Открыть рилс и сделать репост →
       </a>
 
       <p class="giveaway__final">Твой билет — твой шанс выиграть iPhone 17 Pro Max</p>
@@ -204,8 +207,9 @@
     </section>
 
     <section class="actions">
-      <a class="btn btn--tg" href="https://t.me/TOOSOVKA39" target="_blank" rel="noopener"><span class="ico">✈</span> Telegram</a>
-      <a class="btn btn--ig" href="https://instagram.com/imgolod" target="_blank" rel="noopener"><span class="ico">📷</span> Instagram</a>
+      <a class="btn btn--line" href="/menu">Меню бара</a>
+      <a class="btn btn--line" href="https://t.me/TOOSOVKA39" target="_blank" rel="noopener">Telegram</a>
+      <a class="btn btn--line" href="https://instagram.com/imgolod" target="_blank" rel="noopener">Instagram</a>
     </section>
 
     <footer class="footer">
@@ -238,7 +242,7 @@
 
         <!-- Скидка с колеса CRAZY DUBAI -->
         <div class="mwheel" id="m-wheel" hidden>
-          🎡 Скидка колеса <b id="m-wheel-pct">−25%</b> уже применена · сгорит через <b id="m-wheel-timer">15:00</b>
+          Скидка колеса <b id="m-wheel-pct">−25%</b> уже применена · сгорит через <b id="m-wheel-timer">15:00</b>
         </div>
 
         <div class="qty">
@@ -266,7 +270,7 @@
         </div>
 
         <div class="deposit-box" id="m-deposit-box">
-          💸 Эта сумма — <b>ваш депозит</b>: вы тратите её на баре. По сути вход бесплатный.
+          Эта сумма — <b>ваш депозит</b>: вы тратите её на баре. По сути вход бесплатный.
         </div>
 
         <div class="warn-box warn-box--sm">

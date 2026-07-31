@@ -51,21 +51,44 @@ body::after {
 
 /* ---------- Шапка ---------- */
 .topbar {
-  text-align: center;
-  padding: 40px 0 30px;
+  padding: 22px 0 26px;
+}
+/* Логотип слева, кнопка меню справа — меню должно быть видно сразу, без прокрутки */
+.topbar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
 .brand {
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  font-size: clamp(1.3rem, 5vw, 1.7rem);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
 }
-.brand span { color: var(--gold); margin-left: 8px; }
+.brand span { color: var(--gold); margin-left: 7px; }
+.topbar__menu {
+  flex: 0 0 auto;
+  padding: 9px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(8px);
+  color: var(--gold-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.topbar__menu:hover { border-color: var(--gold); background: rgba(230, 192, 115, 0.1); }
 .event-meta {
-  margin-top: 8px;
+  margin-top: 16px;
+  text-align: center;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   letter-spacing: 0.02em;
   text-shadow: 0 1px 8px rgba(0,0,0,0.7);
 }
@@ -88,18 +111,6 @@ body::after {
   text-shadow: 0 1px 10px rgba(0,0,0,0.85);
 }
 .hero__lead b { color: var(--gold-2); font-weight: 700; }
-.hero__strict {
-  display: inline-block;
-  margin-top: 18px;
-  padding: 9px 20px;
-  border-radius: 100px;
-  border: 1px solid rgba(231, 76, 60, 0.55);
-  background: rgba(231, 76, 60, 0.14);
-  color: #ffd9d4;
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-}
 
 /* Главный оффер под заголовком — самая заметная строка на первом экране */
 .hero__offer {
@@ -111,22 +122,12 @@ body::after {
   color: var(--gold-2);
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
 }
-.hero__offer b {
-  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 40%, var(--gold-deep) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+.hero__offer b { color: var(--gold-2); }
 .btn--hero {
-  margin-top: 20px;
-  min-width: 270px;
-  font-size: 1.08rem;
-  padding: 18px 34px;
-  animation: heroPulse 2.6s ease-in-out infinite;
-}
-@keyframes heroPulse {
-  0%, 100% { box-shadow: 0 10px 30px rgba(230, 192, 115, 0.32); }
-  50%      { box-shadow: 0 14px 44px rgba(230, 192, 115, 0.6); }
+  margin-top: 22px;
+  min-width: 260px;
+  font-size: 1.05rem;
+  padding: 17px 32px;
 }
 .hero__under {
   margin-top: 10px;
@@ -159,26 +160,23 @@ body::after {
   position: relative;
   text-align: center;
   margin: 4px 0 30px;
-  padding: 24px 18px 22px;
-  border-radius: 24px;
-  border: 1px solid rgba(214, 41, 118, 0.55);
-  background:
-    radial-gradient(120% 80% at 50% 0%, rgba(214, 41, 118, 0.22) 0%, rgba(10, 10, 16, 0.9) 62%),
-    rgba(10, 10, 16, 0.86);
+  padding: 26px 18px 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: rgba(10, 10, 16, 0.78);
   backdrop-filter: blur(12px);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 18px 60px rgba(214, 41, 118, 0.28);
   overflow: hidden;
 }
 .wheelsec__badge {
   display: inline-block;
-  padding: 6px 16px;
+  padding: 6px 15px;
   border-radius: 100px;
-  background: linear-gradient(135deg, #feda75, #d62976 55%, #962fbf);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 800;
+  border: 1px solid var(--line);
+  color: var(--gold-2);
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.12em;
 }
 .wheelsec__title {
   margin-top: 12px;
@@ -187,11 +185,7 @@ body::after {
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.05;
-  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 30%, #ff6ab8 70%, #b06bff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 4px 22px rgba(214, 41, 118, 0.5));
+  color: var(--gold-2);
 }
 .wheelsec__lead {
   max-width: 460px;
@@ -214,23 +208,12 @@ body::after {
   aspect-ratio: 1;
   margin: 24px auto 4px;
 }
-/* вращающееся пунктирное кольцо-«гирлянда» вокруг колеса */
-.wheel::before {
-  content: "";
-  position: absolute;
-  inset: -13px;
-  border-radius: 50%;
-  border: 2px dashed rgba(255, 214, 130, 0.55);
-  animation: ringSpin 14s linear infinite;
-}
-@keyframes ringSpin { to { transform: rotate(360deg); } }
-
 .wheel__disc {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 6px solid var(--gold);
-  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.55), 0 0 60px rgba(230, 192, 115, 0.3);
+  border: 4px solid var(--gold);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
   /* сам градиент секторов ставит app.js — их число берётся с сервера */
   transition: transform 5.4s cubic-bezier(0.16, 0.72, 0.12, 1);
 }
@@ -277,9 +260,9 @@ body::after {
   width: 31%;
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 3px solid #fff5dd;
-  background: linear-gradient(135deg, #ff9ecb, #d62976 55%, #962fbf);
-  color: #fff;
+  border: 3px solid #17130a;
+  background: var(--gold-2);
+  color: #17130a;
   font-family: var(--font-body);
   font-weight: 800;
   font-size: clamp(0.72rem, 2.9vw, 0.9rem);
@@ -287,16 +270,11 @@ body::after {
   letter-spacing: 0.06em;
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 24px rgba(214, 41, 118, 0.55);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  animation: goPulse 1.8s ease-in-out infinite;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5);
+  transition: transform 0.18s ease;
 }
-.wheel__go:hover { transform: translate(-50%, -50%) scale(1.06); }
-.wheel__go:disabled { opacity: 0.75; cursor: default; animation: none; }
-@keyframes goPulse {
-  0%, 100% { box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 20px rgba(214, 41, 118, 0.45); }
-  50%      { box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 42px rgba(214, 41, 118, 0.9); }
-}
+.wheel__go:hover { transform: translate(-50%, -50%) scale(1.05); }
+.wheel__go:disabled { opacity: 0.7; cursor: default; }
 
 /* Результат прокрута */
 .wres {
@@ -315,11 +293,7 @@ body::after {
   font-size: clamp(3rem, 16vw, 5rem);
   line-height: 1.05;
   margin: 2px 0 4px;
-  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 35%, #ff6ab8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 6px 26px rgba(230, 192, 115, 0.35));
+  color: var(--gold-2);
 }
 .wres__timer { color: #ffd9d4; font-size: 0.95rem; margin-bottom: 14px; }
 .wres__timer b { color: #ff8f8f; font-variant-numeric: tabular-nums; }
@@ -333,27 +307,21 @@ body::after {
   position: relative;
   text-align: center;
   margin: 6px 0 28px;
-  padding: 22px 20px 20px;
-  border-radius: 22px;
-  border: 1px solid var(--gold);
-  background: linear-gradient(180deg, rgba(230,192,115,0.13) 0%, rgba(12,12,18,0.82) 60%);
+  padding: 26px 20px 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: rgba(12, 12, 18, 0.78);
   backdrop-filter: blur(12px);
-  box-shadow: 0 0 0 1px rgba(230,192,115,0.18), 0 18px 60px rgba(230,192,115,0.14);
-  animation: giveawayGlow 3.2s ease-in-out infinite;
-}
-@keyframes giveawayGlow {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(230,192,115,0.18), 0 18px 60px rgba(230,192,115,0.12); }
-  50%      { box-shadow: 0 0 0 1px rgba(230,192,115,0.38), 0 18px 70px rgba(230,192,115,0.30); }
 }
 .giveaway__badge {
   display: inline-block;
-  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
-  color: #17130a;
-  font-size: 0.78rem;
-  font-weight: 800;
+  border: 1px solid var(--line);
+  color: var(--gold-2);
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  padding: 6px 16px;
+  letter-spacing: 0.12em;
+  padding: 6px 15px;
   border-radius: 100px;
   margin-bottom: 14px;
 }
@@ -374,41 +342,13 @@ body::after {
   margin-top: 4px;
   font-size: clamp(1.7rem, 6.4vw, 2.6rem);
   letter-spacing: 0.01em;
-  background: linear-gradient(135deg, #fff3d6 0%, var(--gold-2) 35%, var(--gold-deep) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 6px 30px rgba(230,192,115,0.25);
+  color: var(--gold-2);
 }
 .giveaway__lead {
   color: var(--muted);
   font-size: 0.95rem;
   max-width: 460px;
   margin: 0 auto;
-}
-
-.giveaway__progress { max-width: 420px; margin: 20px auto 4px; }
-.giveaway__bar {
-  height: 10px;
-  border-radius: 100px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid var(--line);
-  overflow: hidden;
-}
-.giveaway__bar span {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 100px;
-  background: linear-gradient(90deg, var(--gold-deep), var(--gold-2));
-  transition: width 0.8s ease;
-}
-.giveaway__count {
-  margin-top: 8px;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: var(--gold-2);
-  letter-spacing: 0.02em;
 }
 
 .giveaway__how {
@@ -445,10 +385,10 @@ body::after {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
-  color: #17130a;
+  border: 1px solid var(--line);
+  color: var(--gold-2);
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -462,20 +402,16 @@ body::after {
   justify-content: center;
   gap: 9px;
   margin: 16px auto 0;
-  padding: 14px 24px;
+  padding: 13px 24px;
   border-radius: 100px;
-  font-weight: 700;
-  font-size: 0.98rem;
+  border: 1px solid var(--gold);
+  font-weight: 600;
+  font-size: 0.96rem;
   letter-spacing: 0.02em;
-  color: #fff;
-  background: linear-gradient(135deg, #feda75, #d62976 45%, #962fbf 80%, #4f5bd5);
-  box-shadow: 0 10px 30px rgba(214, 41, 118, 0.32);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: var(--gold-2);
+  transition: background 0.2s ease;
 }
-.giveaway__reel:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 40px rgba(214, 41, 118, 0.5);
-}
+.giveaway__reel:hover { background: rgba(230, 192, 115, 0.1); }
 
 .giveaway__final {
   margin-top: 18px;
@@ -484,7 +420,6 @@ body::after {
   font-size: clamp(1.05rem, 3.6vw, 1.35rem);
   line-height: 1.25;
   color: var(--gold-2);
-  text-shadow: 0 2px 18px rgba(0,0,0,0.6);
 }
 
 /* ---------- Билеты ---------- */
@@ -539,14 +474,12 @@ body::after {
   width: 100%;
   padding: 13px 16px;
   border-radius: 100px;
-  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  background: var(--gold-2);
   color: #17130a;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.98rem;
   letter-spacing: 0.02em;
-  box-shadow: 0 8px 22px rgba(230, 192, 115, 0.22);
 }
-.ticket:hover .ticket__cta { box-shadow: 0 12px 30px rgba(230, 192, 115, 0.42); }
 .ticket--soldout {
   cursor: default;
   opacity: 0.72;
@@ -562,7 +495,6 @@ body::after {
 .tickets__loading { text-align: center; color: var(--muted); grid-column: 1 / -1; padding: 20px; }
 .ticket--vip {
   border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold), 0 16px 50px rgba(230,192,115,0.16);
 }
 .ticket__badge {
   position: absolute;
@@ -570,7 +502,7 @@ body::after {
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
-  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  background: var(--gold-2);
   color: #17130a;
   font-size: 0.72rem;
   font-weight: 700;
@@ -612,10 +544,10 @@ body::after {
   margin: -4px 0 10px;
   padding: 4px 11px;
   border-radius: 100px;
-  background: linear-gradient(135deg, #feda75, #d62976 55%, #962fbf);
-  color: #fff;
+  border: 1px solid var(--gold);
+  color: var(--gold-2);
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.04em;
 }
 /* Короткая выгода под ценой: «вернётся баром» / «без депозита» */
@@ -633,7 +565,7 @@ body::after {
   color: #ffb4a8;
 }
 /* Рекомендуемый билет — выделяем рамкой, он должен цеплять глаз первым */
-.ticket--hot { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(230,192,115,0.5), 0 16px 50px rgba(230,192,115,0.14); }
+.ticket--hot { border-color: var(--gold); }
 
 .tickets__note {
   text-align: center;
@@ -770,30 +702,28 @@ body::after {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn:hover { transform: translateY(-2px); }
-.ico { font-size: 1.1em; }
 
 .btn--full { width: 100%; }
 
 .btn--buy {
-  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  background: var(--gold-2);
   color: #17130a;
-  box-shadow: 0 10px 30px rgba(230, 192, 115, 0.32);
+  box-shadow: 0 8px 24px rgba(230, 192, 115, 0.22);
 }
-.btn--buy:hover { box-shadow: 0 14px 40px rgba(230, 192, 115, 0.5); }
+.btn--buy:hover { box-shadow: 0 12px 32px rgba(230, 192, 115, 0.34); }
 
-.btn--tg {
-  background: linear-gradient(135deg, #37aee2, #1e88c4);
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(55, 174, 226, 0.32);
+/* Второстепенные ссылки (меню, соцсети) — контурные, чтобы не спорить с «Купить» */
+.btn--line {
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.96rem;
+  padding: 14px 24px;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
-.btn--tg:hover { box-shadow: 0 14px 40px rgba(55, 174, 226, 0.5); }
-
-.btn--ig {
-  background: linear-gradient(135deg, #feda75, #d62976 45%, #962fbf 80%, #4f5bd5);
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(214, 41, 118, 0.32);
-}
-.btn--ig:hover { box-shadow: 0 14px 40px rgba(214, 41, 118, 0.5); }
+.btn--line:hover { border-color: var(--gold); background: rgba(230, 192, 115, 0.08); }
 
 /* ---------- Подвал ---------- */
 .footer {
@@ -838,7 +768,7 @@ body.no-scroll { overflow: hidden; }
 .modal__close:hover { color: var(--gold); }
 .modal__badge {
   display: inline-block;
-  background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  background: var(--gold-2);
   color: #17130a; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.08em; padding: 4px 12px; border-radius: 100px; margin-bottom: 10px;
 }
@@ -939,11 +869,11 @@ body.no-scroll { overflow: hidden; }
   margin-bottom: 14px;
   font-size: 0.9rem;
   line-height: 1.45;
-  color: #fff;
-  background: linear-gradient(135deg, rgba(254, 218, 117, 0.22), rgba(214, 41, 118, 0.32) 55%, rgba(150, 47, 191, 0.3));
-  border: 1px solid rgba(214, 41, 118, 0.6);
+  color: var(--muted);
+  background: rgba(230, 192, 115, 0.1);
+  border: 1px solid var(--gold);
 }
-.mwheel b { color: #ffd98a; font-variant-numeric: tabular-nums; }
+.mwheel b { color: var(--gold-2); font-variant-numeric: tabular-nums; }
 .warn-box--big {
   text-align: center;
   font-size: 1rem;
@@ -963,7 +893,7 @@ body.no-scroll { overflow: hidden; }
 /* ---------- Экран успеха + код ---------- */
 .success__check {
   width: 64px; height: 64px; margin: 6px auto 16px;
-  border-radius: 50%; background: linear-gradient(135deg, var(--gold-2), var(--gold-deep));
+  border-radius: 50%; background: var(--gold-2);
   color: #17130a; font-size: 2rem; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
 }
