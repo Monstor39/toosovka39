@@ -51,14 +51,8 @@ body::after {
 
 /* ---------- Шапка ---------- */
 .topbar {
-  padding: 22px 0 26px;
-}
-/* Логотип слева, кнопка меню справа — меню должно быть видно сразу, без прокрутки */
-.topbar__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  text-align: center;
+  padding: 22px 0 24px;
 }
 .brand {
   font-family: var(--font-display);
@@ -69,29 +63,31 @@ body::after {
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
 }
 .brand span { color: var(--gold); margin-left: 7px; }
-.topbar__menu {
-  flex: 0 0 auto;
-  padding: 9px 18px;
-  border-radius: 100px;
-  border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(8px);
-  color: var(--gold-2);
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-.topbar__menu:hover { border-color: var(--gold); background: rgba(230, 192, 115, 0.1); }
 .event-meta {
-  margin-top: 16px;
-  text-align: center;
+  margin-top: 10px;
   color: var(--muted);
   font-size: 0.9rem;
   letter-spacing: 0.02em;
   text-shadow: 0 1px 8px rgba(0,0,0,0.7);
 }
+/* Карта бара — по центру под шапкой: видно сразу, до всякой прокрутки */
+.topbar__menu {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 18px;
+  padding: 12px 26px;
+  border-radius: 100px;
+  border: 1px solid var(--gold);
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(8px);
+  color: var(--gold-2);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.topbar__menu:hover { background: rgba(230, 192, 115, 0.12); transform: translateY(-2px); }
 
 /* ---------- Главный текст ---------- */
 .hero { text-align: center; padding: 0 0 30px; }

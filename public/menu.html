@@ -5,9 +5,9 @@
   <!-- пинч-зум разрешён специально: меню читают с телефона и увеличивают пальцами -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes, viewport-fit=cover" />
   <meta name="theme-color" content="#06060a" />
-  <title>Меню бара — DUBAI PARTY</title>
-  <meta name="description" content="Барное меню DUBAI PARTY: фирменные коктейли, классика, шоты и сеты шотов." />
-  <meta property="og:title" content="Меню бара — DUBAI PARTY" />
+  <title>Карта бара — DUBAI PARTY</title>
+  <meta name="description" content="Карта бара DUBAI PARTY: фирменные коктейли, классика, шоты и сеты шотов." />
+  <meta property="og:title" content="Карта бара — DUBAI PARTY" />
   <meta property="og:image" content="https://toosovka39.ru/menu.jpg" />
 
   <!-- Картинка меню — единственное тяжёлое на странице, поэтому качаем её первой -->
@@ -121,20 +121,20 @@
 
   <header class="bar">
     <a class="bar__back" href="/">← На сайт</a>
-    <span class="bar__title">Меню бара</span>
+    <span class="bar__title">Карта бара</span>
     <a class="bar__full" href="menu.webp" target="_blank" rel="noopener">Оригинал</a>
   </header>
 
   <div class="viewer" id="viewer">
     <picture>
       <source srcset="menu.webp" type="image/webp" />
-      <img src="menu.jpg" alt="Барное меню DUBAI PARTY: коктейли, шоты, сеты шотов"
+      <img src="menu.jpg" alt="Карта бара DUBAI PARTY: коктейли, шоты, сеты шотов"
            id="menu-img" width="1536" height="1024" fetchpriority="high" decoding="async" />
     </picture>
   </div>
 
   <div class="foot">
-    <p class="hint" id="hint">Нажми на меню, чтобы приблизить · поверни телефон боком — станет крупнее</p>
+    <p class="hint" id="hint">Нажми на карту, чтобы приблизить · поверни телефон боком — станет крупнее</p>
     <a class="buy" href="/#tickets">Взять билет на вечеринку →</a>
   </div>
 
@@ -158,7 +158,7 @@
         hint.textContent = "Нажми ещё раз, чтобы отдалить";
       } else {
         viewer.scrollTo(0, 0);
-        hint.textContent = "Нажми на меню, чтобы приблизить · поверни телефон боком — станет крупнее";
+        hint.textContent = "Нажми на карту, чтобы приблизить · поверни телефон боком — станет крупнее";
       }
     });
 
