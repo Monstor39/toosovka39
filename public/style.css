@@ -561,6 +561,58 @@ body.no-scroll { overflow: hidden; }
 .success__info { color: var(--muted); font-size: 0.92rem; text-align: center; margin-bottom: 20px; }
 .success__info b { color: var(--text); }
 
+/* ---------- Страница-итог (главная после вечеринки) ---------- */
+/* Контента мало, поэтому прижимаем его к центру экрана, а не к верху */
+.page--center { justify-content: center; }
+.result { text-align: center; padding: 10px 0 20px; }
+.result__over {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+.result__number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(5rem, 26vw, 10rem);
+  line-height: 1;
+  color: var(--gold-2);
+  margin-top: 8px;
+  text-shadow: 0 6px 40px rgba(0, 0, 0, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+.result__unit {
+  margin-top: 6px;
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  font-weight: 600;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.85);
+}
+.result__title {
+  margin-top: 26px;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75);
+}
+.result__lead {
+  margin: 14px auto 0;
+  max-width: 520px;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.62;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.85);
+}
+.result__lead b { color: var(--gold-2); font-weight: 700; }
+.result__under {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
 /* ---------- Телефон ---------- */
 @media (max-width: 620px) {
   .tickets__grid { grid-template-columns: 1fr; gap: 14px; padding-top: 14px; }
